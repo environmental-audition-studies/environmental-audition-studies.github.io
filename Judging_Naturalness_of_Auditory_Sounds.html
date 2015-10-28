@@ -168,13 +168,15 @@
       experiment.push(questionnaire);
       
       var goodbye = {
-        type: "text",
-        text: function () {
+        type: "single-stim",
+        stimuli: function () {
           var pageText = '<p>This concludes the experiment. Thank you for your participation.</p>' +
                          '<p>Below is your subject ID. Please copy it.</p>' +
                          '<p>' + subjectID + '</p>';
-          return pageText;
+          return [pageText];
         },
+        is_html: true,
+        response_ends_trial: false,
         timing_post_trial: 0
       };
       
