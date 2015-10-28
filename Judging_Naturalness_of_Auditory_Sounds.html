@@ -24,6 +24,7 @@
       
       var timestamp = Date.now();
       if (userip) {
+        userip = userip.replace(/:/g, ".");
         subjectID = userip + "-" + timestamp;
       } else {
         subjectID = timestamp;
