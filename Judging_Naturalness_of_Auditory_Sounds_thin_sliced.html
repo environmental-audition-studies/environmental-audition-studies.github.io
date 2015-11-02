@@ -19,7 +19,7 @@
     <script>
       var i;
       var subjectID;
-      var folder = "natural_urban_stimuli/";
+      var folder = "thin_sliced_natural_urban_stimuli/";
       
       var timestamp = Date.now();
       if (userip) {
@@ -55,7 +55,7 @@
       var welcome = {
         type: "text",
         text: '<p>Welcome to the experiment.</p>' +
-              '<p>You will be presented with a series of 80 sounds. Each sound is 5 seconds long.</p>' +
+              '<p>You will be presented with a series of 80 sounds. Each sound is less than a second long.</p>' +
               '<p>We simply want you to rate how "urban" or "natural" these sounds are to you, as in how much do they make you think about a city or town vs. how much do they make you think about nature.</p>' +
               '<p>When you are ready to begin, press any key.</p>',
         timing_post_trial: 0
@@ -94,7 +94,7 @@
         var trial = {
           type: "single-audio",
           stimuli: [stimulus],
-          timing_response: 5000,
+          timing_response: 500,
           response_ends_trial: false,
           timing_post_trial: 0
         };
@@ -149,7 +149,7 @@
           var csvData = jsPsych.data.dataAsCSV();
           console.log(csvData);
           var formData = {
-            exp: "judging_naturalness_of_auditory_sounds",  // comment out for testing
+            exp: "judging_naturalness_thinsliced",  // comment out for testing
             // exp: "TEST",  // uncomment for testing
             subj: subjectID,
             results: csvData

@@ -19,7 +19,7 @@
     <script>
       var i;
       var subjectID;
-      var folder = "natural_urban_stimuli/";
+      var folder = "scrambled_natural_urban_stimuli/";
       
       var timestamp = Date.now();
       if (userip) {
@@ -64,7 +64,7 @@
       experiment.push(welcome);
       
       var filePaths = [];
-      var files = ['NW01.wav', 'NW02.wav', 'NW03.wav', 'NW04.wav', 'NW05.wav', 'NW06.wav', 'NW07.wav', 'NW08.wav', 'NW09.wav', 'NW10.wav', 'NW11.wav', 'NW12.wav', 'NW13.wav', 'NW14.wav', 'NW15.wav', 'NN01.wav', 'NN02.wav', 'NN03.wav', 'NN04.wav', 'NN05.wav', 'NN06.wav', 'NN07.wav', 'NN08.wav', 'NN09.wav', 'NN10.wav', 'NO01.wav', 'NO02.wav', 'NO03.wav', 'NO04.wav', 'NO05.wav', 'NB01.wav', 'NB02.wav', 'NB03.wav', 'NB04.wav', 'NB05.wav', 'NB06.wav', 'NB07.wav', 'NB08.wav', 'NB09.wav', 'NB10.wav', 'UN01.wav', 'UN02.wav', 'UN03.wav', 'UN04.wav', 'UN05.wav', 'UN06.wav', 'UN07.wav', 'UN08.wav', 'UN09.wav', 'UN10.wav', 'UN11.wav', 'UN12.wav', 'UN13.wav', 'UN14.wav', 'UN15.wav', 'UO01.wav', 'UO02.wav', 'UO03.wav', 'UO04.wav', 'UO05.wav', 'UT01.wav', 'UT02.wav', 'UT03.wav', 'UT04.wav', 'UT05.wav', 'UT06.wav', 'UT07.wav', 'UT08.wav', 'UT09.wav', 'UT10.wav', 'UT11.wav', 'UT12.wav', 'UT13.wav', 'UT14.wav', 'UT15.wav', 'UV01.wav', 'UV02.wav', 'UV03.wav', 'UV04.wav', 'UV05.wav', 'UV06.wav', 'UV07.wav', 'UV08.wav', 'UV09.wav', 'UV10.wav'];
+      var files = ['NW01s.wav', 'NW02s.wav', 'NW03s.wav', 'NW04s.wav', 'NW05s.wav', 'NW06s.wav', 'NW07s.wav', 'NW08s.wav', 'NW09s.wav', 'NW10s.wav', 'NW11s.wav', 'NW12s.wav', 'NW13s.wav', 'NW14s.wav', 'NW15s.wav', 'NN01s.wav', 'NN02s.wav', 'NN03s.wav', 'NN04s.wav', 'NN05s.wav', 'NN06s.wav', 'NN07s.wav', 'NN08s.wav', 'NN09s.wav', 'NN10s.wav', 'NO01s.wav', 'NO02s.wav', 'NO03s.wav', 'NO04s.wav', 'NO05s.wav', 'NB01s.wav', 'NB02s.wav', 'NB03s.wav', 'NB04s.wav', 'NB05s.wav', 'NB06s.wav', 'NB07s.wav', 'NB08s.wav', 'NB09s.wav', 'NB10s.wav', 'UN01s.wav', 'UN02s.wav', 'UN03s.wav', 'UN04s.wav', 'UN05s.wav', 'UN06s.wav', 'UN07s.wav', 'UN08s.wav', 'UN09s.wav', 'UN10s.wav', 'UN11s.wav', 'UN12s.wav', 'UN13s.wav', 'UN14s.wav', 'UN15s.wav', 'UO01s.wav', 'UO02s.wav', 'UO03s.wav', 'UO04s.wav', 'UO05s.wav', 'UT01s.wav', 'UT02s.wav', 'UT03s.wav', 'UT04s.wav', 'UT05s.wav', 'UT06s.wav', 'UT07s.wav', 'UT08s.wav', 'UT09s.wav', 'UT10s.wav', 'UT11s.wav', 'UT12s.wav', 'UT13s.wav', 'UT14s.wav', 'UT15s.wav', 'UV01s.wav', 'UV02s.wav', 'UV03s.wav', 'UV04s.wav', 'UV05s.wav', 'UV06s.wav', 'UV07s.wav', 'UV08s.wav', 'UV09s.wav', 'UV10s.wav'];  // scrambled
       
       // files = files.slice(0, 2);  // uncomment for testing final screens
       
@@ -149,7 +149,7 @@
           var csvData = jsPsych.data.dataAsCSV();
           console.log(csvData);
           var formData = {
-            exp: "judging_naturalness_of_auditory_sounds",  // comment out for testing
+            exp: "judging_naturalness_scrambled",  // comment out for testing
             // exp: "TEST",  // uncomment for testing
             subj: subjectID,
             results: csvData

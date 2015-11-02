@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Judging Naturalness of Auditory Sounds</title>
+    <title>Preference for Auditory Sounds</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="jspsych-4.3/jspsych.js"></script>
     <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
@@ -56,7 +56,7 @@
         type: "text",
         text: '<p>Welcome to the experiment.</p>' +
               '<p>You will be presented with a series of 80 sounds. Each sound is 5 seconds long.</p>' +
-              '<p>We simply want you to rate how "urban" or "natural" these sounds are to you, as in how much do they make you think about a city or town vs. how much do they make you think about nature.</p>' +
+              '<p>We simply want you to rate how much you like or dislike these sounds.</p>' +
               '<p>When you are ready to begin, press any key.</p>',
         timing_post_trial: 0
       };
@@ -120,8 +120,8 @@
         
         var response = {
           type: "single-stim",
-          stimuli: ['<p>Was the sound you heard urban or natural?</p>' +
-                    '<p>Use the numbers 1 through 7 to make your response. "1" corresponds to "very urban". "4" corresponds to "neither urban nor natural", and "7" corresponds to "very natural"</p>'],
+          stimuli: ['<p>How much did you like the sound you just heard?</p>' +
+                    '<p>Use the numbers 1 through 7 to make your response. "1" corresponds to "strongly dislike". "4" corresponds to "neither dislike nor like", and "7" corresponds to "strongly like"</p>'],
           is_html: true,
           choices: ["1", "2", "3", "4", "5", "6", "7"],
           data: [{
@@ -149,7 +149,7 @@
           var csvData = jsPsych.data.dataAsCSV();
           console.log(csvData);
           var formData = {
-            exp: "judging_naturalness_of_auditory_sounds",  // comment out for testing
+            exp: "preference_naturalness",  // comment out for testing
             // exp: "TEST",  // uncomment for testing
             subj: subjectID,
             results: csvData

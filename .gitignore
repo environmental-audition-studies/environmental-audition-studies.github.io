@@ -1,4 +1,8 @@
 jspsych-4.3/tests_examples/
 TEST.html
 
+_ignore/
+
+*.csv
+
 *digit*
