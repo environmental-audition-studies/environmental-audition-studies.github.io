@@ -6,3 +6,4 @@ _ignore/
 *.csv
 
 *digit*
+!mturk_*
