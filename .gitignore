@@ -5,5 +5,6 @@ _ignore/
 
 *.csv
 
-*digit*
+*_digit*
+!digits/
 !mturk_*
