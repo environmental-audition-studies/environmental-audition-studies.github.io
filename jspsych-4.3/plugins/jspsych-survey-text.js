@@ -31,7 +31,8 @@
           preamble: typeof params.preamble == 'undefined' ? "" : params.preamble[i],
           questions: params.questions[i],
           rows: typeof params.rows == 'undefined' ? rows : params.rows[i],
-          columns: typeof params.columns == 'undefined' ? cols : params.columns[i]
+          columns: typeof params.columns == 'undefined' ? cols : params.columns[i],
+          submit_on_enter: params.submit_on_enter
         });
       }
       return trials;
@@ -78,7 +79,7 @@
         'class': 'jspsych-survey-text'
       }));
       $("#jspsych-survey-text-next").html('Submit');
-      
+
       $("#jspsych-survey-text-next").click(function() {
         // measure response time
         var endTime = (new Date()).getTime();
@@ -106,11 +107,13 @@
         jsPsych.finishTrial();
       });
       
-      $(document).keypress(function(e) {
-        if (e.which === 13) {
-          $("#jspsych-survey-text-next").click();
-        }
-      });
+      if (trial.submit_on_enter) {
+        $(document).keypress(function(e) {
+          if (e.which === 13) {
+            $("#jspsych-survey-text-next").click();
+          }
+        });
+      }
 
       var startTime = (new Date()).getTime();
     };
