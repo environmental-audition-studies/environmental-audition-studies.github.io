@@ -212,7 +212,7 @@
               correct_answer: reversedDigitString
             }],
             on_finish: function (trialData) {
-              var answer = JSON.parse(trialData.responses).Q0;
+              var answer = $.trim(JSON.parse(trialData.responses).Q0);
               wasCorrect = (answer === trialData.correct_answer);
               if (wasCorrect) {
                 totalCorrect += 1;
