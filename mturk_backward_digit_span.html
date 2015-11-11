@@ -27,6 +27,7 @@
       var session = 1;
       var cc1 = "";
       var cc2 = "";
+      var continuationCode = "";
       var currentDigitList;
       var reversedDigitString;
       var wasCorrect = true;
@@ -50,6 +51,12 @@
             cc2 = queryPair[1];
           }
         }
+      }
+      
+      if (session === 1) {
+        continuationCode = cc1;
+      } else if (session === 2) {
+        continuationCode = cc2;
       }
       
       var timestamp = Date.now();
@@ -251,7 +258,7 @@
           var formData = {
             // exp: "backward_digit_span",  // comment out for testing
             exp: "TEST",  // uncomment for testing
-            subj: subjectID,
+            subj: subjectID + "-session" + session,
             results: csvData
           };
           $.post(
@@ -270,9 +277,11 @@
       var goodbye = {
         type: "single-stim",
         stimuli: function () {
-          var pageText = '<p>You got ' + totalCorrect + ' out of ' + totalTrials + ' correct.</p>' +
-                         '<p>To continue, click this link:</p>' +
-                         '<p><a href="">[insert URL here]</a></p>';  // link to next part needs to be added ("[URL]?MID=" + subjectID)
+          var pageText = // '<p>You got ' + totalCorrect + ' out of ' + totalTrials + ' correct.</p>' +
+                         '<p>Thank you for completing the task. The "continuation code" you need to proceed in the survey is displayed below:</p>' +
+                         '<p>' + continuationCode + '</p>' +
+                         '<p>You must enter this code into the space provided in the survey to continue.</p>' +
+                         '<p>Afterwards, please close out of this page.</p>';
           return [pageText];
         },
         is_html: true,
