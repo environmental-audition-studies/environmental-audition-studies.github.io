@@ -64,7 +64,12 @@
         $("#jspsych-survey-text-" + i).append('<p class="jspsych-survey-text">' + trial.questions[i] + '</p>');
 
         // add text box
-        $("#jspsych-survey-text-" + i).append('<textarea name="#jspsych-survey-text-response-' + i + '" cols="'+trial.columns[i]+'" rows="'+trial.rows[i]+'"></textarea>');
+        if (i === 0) {
+          $("#jspsych-survey-text-" + i).append('<textarea id="first-textarea" name="#jspsych-survey-text-response-' + i + '" cols="'+trial.columns[i]+'" rows="'+trial.rows[i]+'"></textarea>');
+          $("#first-textarea").focus();
+        } else {
+          $("#jspsych-survey-text-" + i).append('<textarea name="#jspsych-survey-text-response-' + i + '" cols="'+trial.columns[i]+'" rows="'+trial.rows[i]+'"></textarea>');
+        }
       }
 
       // add submit button
@@ -72,7 +77,8 @@
         'id': 'jspsych-survey-text-next',
         'class': 'jspsych-survey-text'
       }));
-      $("#jspsych-survey-text-next").html('Submit Answers');
+      $("#jspsych-survey-text-next").html('Submit');
+      
       $("#jspsych-survey-text-next").click(function() {
         // measure response time
         var endTime = (new Date()).getTime();
@@ -98,6 +104,12 @@
 
         // next trial
         jsPsych.finishTrial();
+      });
+      
+      $(document).keypress(function(e) {
+        if (e.which === 13) {
+          $("#jspsych-survey-text-next").click();
+        }
       });
 
       var startTime = (new Date()).getTime();

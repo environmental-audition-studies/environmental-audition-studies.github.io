@@ -15,8 +15,8 @@
   <body>
     <script>
       /*
-       * Links to this page should appear as:
-       * http://environmental-audition-studies.github.io/mturk_backward_digit_span.html?MID=insert_MID_here
+       * Links to this page should appear similar to the following:
+       * http://environmental-audition-studies.github.io/mturk_backward_digit_span.html?MID=1234&session=1&cc1=2345&cc2=3456
        */
       
       // var useAudio = false;
@@ -24,6 +24,9 @@
       
       var i;
       var subjectID;
+      var session = 1;
+      var cc1 = "";
+      var cc2 = "";
       var currentDigitList;
       var reversedDigitString;
       var wasCorrect = true;
@@ -35,9 +38,17 @@
       var queryString = location.search.substring(1);
       var queryPairs = queryString.split("&");
       for (i = 0; i < queryPairs.length; i += 1) {
-        queryPair = queryPairs[i];
-        if (queryPair.toUpperCase().indexOf("MID=") > -1) {  // case insensitive search for "MID=" in URL
-          subjectID = queryPair.split("=")[1];
+        queryPair = queryPairs[i].split("=");
+        if (queryPair.length === 2) {
+          if (queryPair[0] === "MID") {  // exact search for each URL parameter
+            subjectID = queryPair[1];
+          } else if (queryPair[0] === "session") {
+            session = Number(queryPair[1]);
+          } else if (queryPair[0] === "cc1") {
+            cc1 = queryPair[1];
+          } else if (queryPair[0] === "cc2") {
+            cc2 = queryPair[1];
+          }
         }
       }
       
@@ -45,7 +56,13 @@
       if (!subjectID) {
         subjectID = timestamp + "-no-MID";
       }
-      jsPsych.data.addProperties({subject: subjectID});
+      
+      jsPsych.data.addProperties({
+        subject: subjectID,
+        session: session,
+        cc1: cc1,
+        cc2: cc2
+      });
       
       if (useAudio) {
         var fileMap = {
@@ -110,12 +127,19 @@
       var experiment = [];
       
       if (useAudio) {
+        var preVolumeTest = {
+          type: "text",
+          text: '<p>This task requires your volume to be at a comfortable level. Press any key to continue and some white noise will play. Please adjust your volume so that the sound that is played is at a comfortable listening level.</p>',
+          timing_post_trial: 1000
+        };
+        
+        experiment.push(preVolumeTest);
+        
         var volumeTest = {
           type: "single-audio",
           stimuli: [folder + "volumetest.wav"],
           timing_response: 10000,
           response_ends_trial: false,
-          prompt: "<p>Before we begin, please adjust your volume so that the sound currently being played is at a comfortable listening level.</p>",
           timing_post_trial: 0
         };
         
