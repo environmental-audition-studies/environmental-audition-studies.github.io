@@ -183,11 +183,11 @@
       };
       
       /*
-       * The participant is presented with sequences of digits of length 3 to 9 twice,
+       * The participant is presented with sequences of digits of length 3 to 9 (with two sequences of the same length in a row),
        * and the number of correct responses is recorded.
        */
-      for (var j = 0; j < 2; j += 1) {
-        for (i = 3; i < 10; i += 1) {
+      for (i = 3; i < 10; i += 1) {
+        for (var j = 0; j < 2; j += 1) {
           var stimSeq;
           var questions;
           var stimList = getStimuli(i);
