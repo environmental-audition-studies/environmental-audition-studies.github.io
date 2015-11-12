@@ -136,7 +136,7 @@
       if (useAudio) {
         var preVolumeTest = {
           type: "text",
-          text: '<p>This task requires your volume to be at a comfortable level. Press any key to continue and a white noise will play. Please adjust your volume so that the sound that is played is at a comfortable listening level.</p>',
+          text: '<p>This task requires your volume to be at a comfortable level. Press Enter to continue and a white noise will play. Please adjust your volume so that the sound that is played is at a comfortable listening level.</p>',
           timing_post_trial: 1000
         };
         
@@ -162,10 +162,10 @@
       
       var welcome = {
         type: "text",
-        text: '<p>Welcome to the experiment.</p>' +
+        text: '<p>Welcome to the memory task.</p>' +
               instructions +
               '<p>To ensure high quality data, it is very important that you do not use any memory aid (e.g., pen and paper). Please do the task solely in your head.</p>' +
-              '<p>When you are ready to begin, press any key.</p>',
+              '<p>When you are ready to begin, press Enter.</p>',
         timing_post_trial: 0
       };
       
@@ -200,7 +200,7 @@
               response_ends_trial: false,
               timing_post_trial: 0
             };
-            questions = [['Please type the digits you just heard in reverse order (starting from the last digit and ending on the first digit).']];
+            questions = [['Please type the digits you just heard in reverse order (starting from the last digit and ending on the first digit). Press Enter to submit your response.']];
           } else {
             stimSeq = {
               type: "single-stim",
@@ -210,7 +210,7 @@
               response_ends_trial: false,
               timing_post_trial: 100
             };
-            questions = [['Please type the digits you just saw in reverse order (starting from the last digit and ending on the first digit).']];
+            questions = [['Please type the digits you just saw in reverse order (starting from the last digit and ending on the first digit). Press Enter to submit your response']];
           }
         
           var response = {
