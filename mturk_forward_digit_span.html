@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Backward Digit Span</title>
+    <title>Forward Digit Span</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="jspsych-4.3/jspsych.js"></script>
     <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
@@ -16,11 +16,11 @@
     <script>
       /*
        * Links to this page should appear similar to the following:
-       * http://environmental-audition-studies.github.io/mturk_backward_digit_span.html?MID=1234&session=1&cc1=2345&cc2=3456
+       * http://environmental-audition-studies.github.io/mturk_forward_digit_span.html?MID=1234&session=1&cc1=2345&cc2=3456
        */
       
-      // var useAudio = false;
-      var useAudio = true;
+      var useAudio = false;
+      // var useAudio = true;
       
       var subjectID;
       var session = 1;
@@ -28,7 +28,7 @@
       var cc2 = "";
       var continuationCode = "";
       var currentDigitList;
-      var reversedDigitString;
+      var digitString;
       var wasCorrect = true;
       var totalCorrect = 0;
       var totalTrials = 0;
@@ -89,7 +89,11 @@
       }
       
       function getRandDigit() {
-        return Math.floor(Math.random() * 9) + 1;
+        if (useAudio) {
+          return Math.floor(Math.random() * 9) + 1;
+        } else {
+          return Math.floor(Math.random() * 10);
+        }
       }
       
       function getDiffDigit(digit) {
@@ -115,16 +119,16 @@
         var digit;
         var stimList = [];
         currentDigitList = getDigitList(numDigits);
-        reversedDigitString = "";
+        digitString = "";
         for (var i = 0; i < currentDigitList.length; i += 1) {
           if (useAudio) {
             digit = currentDigitList[i];
             stimList.push(digitToFile(digit));
-            reversedDigitString = digit.toString() + reversedDigitString;
+            digitString += digit.toString();
           } else {
             digit = currentDigitList[i].toString();
             stimList.push('<h1>' + digit + '</h1>');
-            reversedDigitString = digit + reversedDigitString;
+            digitString += digit;
           }
         }
         return stimList;
@@ -155,9 +159,9 @@
       
       var instructions;
       if (useAudio) {
-        instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in reverse order.</p>';
+        instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in the same order.</p>';
       } else {
-        instructions = '<p>On each trial, you will see a sequence of digits and be asked to type them back in reverse order.</p>';
+        instructions = '<p>On each trial, you will see a sequence of digits and be asked to type them back in the same order.</p>';
       }
       
       var welcome = {
@@ -187,64 +191,62 @@
        * The participant is presented with sequences of digits of length 3 to 9 (with two sequences of the same length in a row),
        * and the number of correct responses is recorded.
        */
-      for (var i = 3; i < 10; i += 1) {
-        for (var j = 0; j < 2; j += 1) {
-          var stimSeq;
-          var questions;
-          var stimList = getStimuli(i);
-          
-          if (useAudio) {
-            stimSeq = {
-              type: "single-audio",
-              stimuli: stimList,
-              timing_response: 1000,
-              response_ends_trial: false,
-              timing_post_trial: 0
-            };
-            questions = [['Please type the digits you just heard in reverse order (starting from the last digit and ending on the first digit). Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response.']];
-          } else {
-            stimSeq = {
-              type: "single-stim",
-              stimuli: stimList,
-              is_html: true,
-              timing_response: 900,
-              response_ends_trial: false,
-              timing_post_trial: 100
-            };
-            questions = [['Please type the digits you just saw in reverse order (starting from the last digit and ending on the first digit). Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response']];
-          }
+      for (var i = 0; i < 10; i += 1) {
+        var stimSeq;
+        var questions;
+        var stimList = getStimuli(7);
         
-          var response = {
-            type: "survey-text",
-            questions: questions,
-            data: [{
-              correct_answer: reversedDigitString
-            }],
-            on_finish: function (trialData) {
-              var answer = $.trim(JSON.parse(trialData.responses).Q0);
-              wasCorrect = (answer === trialData.correct_answer);
-              if (wasCorrect) {
-                totalCorrect += 1;
-              }
-              jsPsych.data.addDataToLastTrial({
-                answer: answer,
-                was_correct: (wasCorrect ? 1 : 0),
-                total_correct: totalCorrect
-              });
-            },
-            timing_post_trial: 0,
-            submit_on_enter: true
+        if (useAudio) {
+          stimSeq = {
+            type: "single-audio",
+            stimuli: stimList,
+            timing_response: 1000,
+            response_ends_trial: false,
+            timing_post_trial: 0
           };
-          
-          var chunk = {
-            chunk_type: "linear",
-            timeline: [fixation, stimSeq, response],
+          questions = [['Please type the digits you just heard in the same order. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response.']];
+        } else {
+          stimSeq = {
+            type: "single-stim",
+            stimuli: stimList,
+            is_html: true,
+            timing_response: 900,
+            response_ends_trial: false,
+            timing_post_trial: 100
           };
-          
-          experiment.push(chunk);
-          
-          totalTrials += 1;
+          questions = [['Please type the digits you just saw in the same order. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response']];
         }
+      
+        var response = {
+          type: "survey-text",
+          questions: questions,
+          data: [{
+            correct_answer: digitString
+          }],
+          on_finish: function (trialData) {
+            var answer = $.trim(JSON.parse(trialData.responses).Q0);
+            wasCorrect = (answer === trialData.correct_answer);
+            if (wasCorrect) {
+              totalCorrect += 1;
+            }
+            jsPsych.data.addDataToLastTrial({
+              answer: answer,
+              was_correct: (wasCorrect ? 1 : 0),
+              total_correct: totalCorrect
+            });
+          },
+          timing_post_trial: 0,
+          submit_on_enter: true
+        };
+        
+        var chunk = {
+          chunk_type: "linear",
+          timeline: [fixation, stimSeq, response],
+        };
+        
+        experiment.push(chunk);
+        
+        totalTrials += 1;
       }
       
       /*
@@ -258,7 +260,7 @@
           var csvData = jsPsych.data.dataAsCSV();
           console.log(csvData);
           var formData = {
-            exp: "backward_digit_span",  // comment out for testing
+            // exp: "forward_digit_span",  // comment out for testing
             // exp: "TEST",  // uncomment for testing
             subj: subjectID + "-session" + session,
             results: csvData
