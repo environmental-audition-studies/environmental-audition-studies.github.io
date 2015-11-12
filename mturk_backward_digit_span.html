@@ -296,6 +296,16 @@
       jsPsych.init({
         experiment_structure: experiment
       });
+      
+      var disallowedKeys = [37, 38, 39, 40, 8, 46];  // arrow keys, backspace, and delete
+      $(document).keydown(function(e) {
+        var key = e.which;
+        if (disallowedKeys.indexOf(key) > -1) {
+          e.preventDefault();
+          return false;
+        }
+        return true;
+      });
     </script>
   </body>
 </html>
