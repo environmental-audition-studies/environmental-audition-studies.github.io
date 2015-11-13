@@ -159,9 +159,9 @@
       
       var instructions;
       if (useAudio) {
-        instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in the same order.</p>';
+        instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in the order in which they were presented.</p>';
       } else {
-        instructions = '<p>On each trial, you will see a sequence of digits and be asked to type them back in the same order.</p>';
+        instructions = '<p>On each trial, you will see a sequence of digits and be asked to type them back in the order in which they were presented.</p>';
       }
       
       var welcome = {
@@ -204,7 +204,7 @@
             response_ends_trial: false,
             timing_post_trial: 0
           };
-          questions = [['Please type the digits you just heard in the same order. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response.']];
+          questions = [['Please type the digits you just heard in the order in which they were presented. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response.']];
         } else {
           stimSeq = {
             type: "single-stim",
@@ -214,7 +214,7 @@
             response_ends_trial: false,
             timing_post_trial: 100
           };
-          questions = [['Please type the digits you just saw in the same order. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response']];
+          questions = [['Please type the digits you just saw in the order in which they were presented. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response']];
         }
       
         var response = {
