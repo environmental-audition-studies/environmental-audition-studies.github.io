@@ -33,6 +33,7 @@
           rows: typeof params.rows == 'undefined' ? rows : params.rows[i],
           columns: typeof params.columns == 'undefined' ? cols : params.columns[i],
           submit_on_enter: params.submit_on_enter,
+          hide_submit: params.hide_submit,
           timing_response: params.timing_response || -1
         });
       }
@@ -84,6 +85,10 @@
         'class': 'jspsych-survey-text'
       }));
       $("#jspsych-survey-text-next").html('Submit');
+      if (trial.hide_submit) {
+        $("#jspsych-survey-text-next").hide();
+      }
+      
       $("#jspsych-survey-text-next").click(function() {
         // measure response time
         var endTime = (new Date()).getTime();
