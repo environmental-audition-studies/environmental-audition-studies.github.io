@@ -36,7 +36,7 @@
         type: "single-stim",
         stimuli: [folder + "mturk_consent.png"],
         prompt: '<p>Please wait for the consent form to load. If you agree, please press any key to continue on to the study.</p>',
-        timing_post_trial: 1000
+        timing_post_trial: 500
       };
       
       experiment.push(consent);
@@ -58,7 +58,7 @@
               '<p>You will be presented with a series of 80 sounds. Each sound is extremely short (approximately 1/10 of a second in duration).</p>' +
               '<p>We simply want you to rate how much you like or dislike these sounds.</p>' +
               '<p>When you are ready to begin, press any key.</p>',
-        timing_post_trial: 0
+        timing_post_trial: 500
       };
       
       experiment.push(welcome);
@@ -128,7 +128,7 @@
             file: filePath,
             soundtype: soundtype
           }],
-          timing_post_trial: 0
+          timing_post_trial: 500
         };
         
         experiment.push(fixation);
