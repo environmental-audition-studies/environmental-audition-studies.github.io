@@ -32,7 +32,8 @@
           questions: params.questions[i],
           rows: typeof params.rows == 'undefined' ? rows : params.rows[i],
           columns: typeof params.columns == 'undefined' ? cols : params.columns[i],
-          submit_on_enter: params.submit_on_enter
+          submit_on_enter: params.submit_on_enter,
+          timing_response: params.timing_response || -1
         });
       }
       return trials;
@@ -45,6 +46,10 @@
       // it with the output of the function
       trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
+      // this array holds handlers from setTimeout calls
+      // that need to be cleared if the trial ends early
+      var setTimeoutHandlers = [];
+      
       // show preamble text
       display_element.append($('<div>', {
         "id": 'jspsych-survey-likert-preamble',
@@ -79,12 +84,16 @@
         'class': 'jspsych-survey-text'
       }));
       $("#jspsych-survey-text-next").html('Submit');
-
       $("#jspsych-survey-text-next").click(function() {
         // measure response time
         var endTime = (new Date()).getTime();
         var response_time = endTime - startTime;
 
+        // kill any remaining setTimeout handlers
+        for (var i = 0; i < setTimeoutHandlers.length; i++) {
+          clearTimeout(setTimeoutHandlers[i]);
+        }
+        
         // create object to hold responses
         var question_data = {};
         $("div.jspsych-survey-text-question").each(function(index) {
@@ -113,6 +122,14 @@
             $("#jspsych-survey-text-next").click();
           }
         });
+      }
+      
+      // end trial if time limit is set
+      if (trial.timing_response > 0) {
+        var t2 = setTimeout(function() {
+          $("#jspsych-survey-text-next").click();
+        }, trial.timing_response);
+        setTimeoutHandlers.push(t2);
       }
 
       var startTime = (new Date()).getTime();

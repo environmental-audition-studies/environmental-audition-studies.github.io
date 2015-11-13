@@ -159,16 +159,18 @@
       
       var instructions;
       if (useAudio) {
-        instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in the order in which they were presented.</p>';
+        instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in the order they were presented.</p>';
       } else {
-        instructions = '<p>On each trial, you will see a sequence of digits and be asked to type them back in the order in which they were presented.</p>';
+        instructions = '<p>On each trial, you will see a sequence of digits and be asked to type them back in the order they were presented.</p>';
       }
       
       var welcome = {
         type: "text",
-        text: '<p>Welcome to the memory task.</p>' +
+        text: '<p>Welcome to the digit span task.</p>' +
               instructions +
-              '<p>To ensure high quality data, it is very important that you do not use any memory aid (e.g., pen and paper). Please do the task solely in your head.</p>' +
+              '<p>This task is timed. The window of time you have to type the digits in order is relative to the number of digits you see.</p>' +
+              '<p>Example: If you see 4 digits, you will have a 4 second window in which to respond.</p>' +
+              '<p>To ensure high quality data, it is very important that you do not use any memory aid (e.g. pen and paper). Please do this task solely in your head.</p>' +
               '<p>When you are ready to begin, press Enter.</p>',
         timing_post_trial: 0,
         cont_key: [13]
@@ -176,6 +178,7 @@
       
       experiment.push(welcome);
       
+      /*
       var fixation = {
         type: "multi-stim-multi-response",
         stimuli: [["***", "**", "*"]],
@@ -186,67 +189,71 @@
         response_ends_trial: false,
         timing_post_trial: 1000
       };
+      */
       
       /*
-       * The participant is presented with sequences of seven digits ten times,
+       * The participant is presented with sequences of digits of length 4 to 8 (with two sequences of the same length in a row),
        * and the number of correct responses is recorded.
        */
-      for (var i = 0; i < 10; i += 1) {
-        var stimSeq;
-        var questions;
-        var stimList = getStimuli(7);
+      for (var i = 4; i < 9; i += 1) {
+        for (var j = 0; j < 2; j += 1) {
+          var stimSeq;
+          var questions;
+          var stimList = getStimuli(i);
+          
+          if (useAudio) {
+            stimSeq = {
+              type: "single-audio",
+              stimuli: stimList,
+              timing_response: 1000,
+              response_ends_trial: false,
+              timing_post_trial: 0
+            };
+            questions = [['Please type the digits you just heard in the order in which they were presented. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response.']];
+          } else {
+            stimSeq = {
+              type: "single-stim",
+              stimuli: stimList,
+              is_html: true,
+              timing_response: 900,
+              response_ends_trial: false,
+              timing_post_trial: 100
+            };
+            questions = [['Please type the digits you just saw in the order in which they were presented. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response.']];
+          }
         
-        if (useAudio) {
-          stimSeq = {
-            type: "single-audio",
-            stimuli: stimList,
-            timing_response: 1000,
-            response_ends_trial: false,
-            timing_post_trial: 0
+          var response = {
+            type: "survey-text",
+            questions: questions,
+            data: [{
+              correct_answer: '"' + digitString + '"'
+            }],
+            on_finish: function (trialData) {
+              var answer = '"' + $.trim(JSON.parse(trialData.responses).Q0) + '"';
+              wasCorrect = (answer === trialData.correct_answer);
+              if (wasCorrect) {
+                totalCorrect += 1;
+              }
+              jsPsych.data.addDataToLastTrial({
+                answer: answer,
+                was_correct: (wasCorrect ? 1 : 0),
+                total_correct: totalCorrect
+              });
+            },
+            timing_post_trial: 0,
+            submit_on_enter: true,
+            timing_response: i * 1000
           };
-          questions = [['Please type the digits you just heard in the order in which they were presented. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response.']];
-        } else {
-          stimSeq = {
-            type: "single-stim",
-            stimuli: stimList,
-            is_html: true,
-            timing_response: 900,
-            response_ends_trial: false,
-            timing_post_trial: 100
+          
+          var chunk = {
+            chunk_type: "linear",
+            timeline: [stimSeq, response],
           };
-          questions = [['Please type the digits you just saw in the order in which they were presented. Backspace has been disabled so enter the digits carefully. You may press Enter to submit your response']];
+          
+          experiment.push(chunk);
+          
+          totalTrials += 1;
         }
-      
-        var response = {
-          type: "survey-text",
-          questions: questions,
-          data: [{
-            correct_answer: digitString
-          }],
-          on_finish: function (trialData) {
-            var answer = $.trim(JSON.parse(trialData.responses).Q0);
-            wasCorrect = (answer === trialData.correct_answer);
-            if (wasCorrect) {
-              totalCorrect += 1;
-            }
-            jsPsych.data.addDataToLastTrial({
-              answer: answer,
-              was_correct: (wasCorrect ? 1 : 0),
-              total_correct: totalCorrect
-            });
-          },
-          timing_post_trial: 0,
-          submit_on_enter: true
-        };
-        
-        var chunk = {
-          chunk_type: "linear",
-          timeline: [fixation, stimSeq, response],
-        };
-        
-        experiment.push(chunk);
-        
-        totalTrials += 1;
       }
       
       /*
@@ -261,7 +268,7 @@
           console.log(csvData);
           var formData = {
             // exp: "forward_digit_span",  // comment out for testing
-            // exp: "TEST",  // uncomment for testing
+            exp: "TEST",  // uncomment for testing
             subj: subjectID + "-session" + session,
             results: csvData
           };
