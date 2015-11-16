@@ -1,10 +1,11 @@
 jspsych-4.3/tests_examples/
 TEST.html
 
-_ignore/
+_*
 
 *.csv
 
 *_digit*
-!digits/
 !mturk_*
+
+coins_and_dice
