@@ -1,0 +1,188 @@
+<html>
+  <head>
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-4.3/jspsych.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-animation.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-call-function.js"></script>
+    <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <script>
+      var experiment = [];
+      var folder = "coins_and_dice/";
+      var frameTime = 150;
+      var numFrames = 12;
+      var totalCorrect = 0;
+      
+      var coinMap = {
+        0: folder + "98_quarter_obverse.png",
+        1: folder + "98_quarter_reverse.png"
+      };
+      
+      var diceMap = {
+        1: folder + "Dice-1.png",
+        2: folder + "Dice-2.png",
+        3: folder + "Dice-3.png",
+        4: folder + "Dice-4.png",
+        5: folder + "Dice-5.png",
+        6: folder + "Dice-6.png"
+      };
+      
+      var keyMap = {
+        "72": "h",
+        "84": "t",
+        "49": 1,
+        "50": 2,
+        "51": 3,
+        "52": 4,
+        "53": 5,
+        "54": 6
+      };
+      
+      /* returns either 0 or 1 */
+      function flipCoin() {
+        var result = Math.floor(Math.random() * 2);
+        return result;
+      }
+      
+      /* returns a random integer from 1 to 6 (inclusive) */
+      function rollDie() {
+        var result = Math.floor(Math.random() * 6 + 1);
+        return result;
+      }
+      
+      /* used below as on_finish function in coinResultTrial and dieResultTrial */
+      function processTrialData(trialData) {
+        var correctAnswer = trialData.correct_answer;
+        var answer = keyMap[trialData.key_press];
+        var wasCorrect = (answer === correctAnswer) ? 1 : 0;
+        if (wasCorrect) {
+          totalCorrect += 1;
+        }
+        jsPsych.data.addDataToLastTrial({
+          answer: answer,
+          was_correct: wasCorrect,
+          total_correct: totalCorrect
+        });
+      }
+      
+      
+      var welcome = {
+        type: "text",
+        text: '<p>Welcome to the experiment.</p>' +
+              '<p>When you are ready to begin, press Enter.</p>',
+        cont_key: [13]
+      };
+      
+      experiment.push(welcome);
+      
+      /* first coin flip animation starts with heads, second starts with tails */
+      var coinSeq1 = [];
+      var coinSeq2 = [];
+      for (var i = 0; i < numFrames / 2; i++) {
+        coinSeq1.push(coinMap[0]);
+        coinSeq1.push(coinMap[1]);
+        coinSeq2.push(coinMap[1]);
+        coinSeq2.push(coinMap[0]);
+      }
+      
+      var coinAnimation1 = {
+        type: "animation",
+        stimuli: [coinSeq1],
+        frame_time: frameTime,
+        timing_post_trial: 0
+      };
+      
+      var coinAnimation2 = $.extend(true, {}, coinAnimation1);
+      coinAnimation2.stimuli = [coinSeq2];
+      
+      
+      /* currently alternates between coin flips and die rolls a set number of times */
+      for (var i = 0; i < 5; i++) {
+        var coinResult = flipCoin();
+        
+        var coinResultTrial = {
+          type: "single-stim",
+          stimuli: [coinMap[coinResult]],
+          prompt: '<p style="text-align:center">What result do you see? Press "h" for heads or "t" for tails.<p>',
+          choices: ["h", "t"],  // "h" is 72 and "t" is 84
+          data: [{
+            coin_or_dice: "coin",
+            correct_answer: (coinResult === 0 ? "h" : "t")
+          }],
+          on_finish: processTrialData
+        };
+        
+        if (flipCoin()) {
+          experiment.push(coinAnimation1);
+        } else {
+          experiment.push(coinAnimation2);
+        }
+        experiment.push(coinResultTrial);
+        
+                
+        /* random die roll animation */
+        var prevResult;
+        var tempResult = 0;
+        var dieSeq = [];
+        for (var j = 0; j < numFrames; j++) {
+          prevResult = tempResult;
+          while (tempResult === prevResult){
+            tempResult = rollDie();
+          }
+          dieSeq.push(diceMap[tempResult]);
+        }
+        
+        var dieAnimation = {
+          type: "animation",
+          stimuli: [dieSeq],
+          frame_time: frameTime,
+          timing_post_trial: 0
+        };
+        
+        var dieResult = rollDie();
+        
+        var dieResultTrial = {
+          type: "single-stim",
+          stimuli: [diceMap[dieResult]],
+          prompt: '<p style="text-align:center">What result do you see? Press the number key that corresponds to the number of dots.<p>',
+          choices: ["1", "2", "3", "4", "5", "6"],  // "1" is 49 and "6" is 54
+          data: [{
+            coin_or_dice: "dice",
+            correct_answer: dieResult
+          }],
+          on_finish: processTrialData
+        };
+        
+        experiment.push(dieAnimation);
+        experiment.push(dieResultTrial);
+      }
+      
+      
+      var dataBlock = {
+        type: "call-function",
+        func: function () {
+          var csvData = jsPsych.data.dataAsCSV();
+          console.log(csvData);
+        }
+      };
+      
+      experiment.push(dataBlock);
+      
+      var goodbye = {
+        type: "text",
+        text: '<p>This concludes the experiment.</p>'
+      };
+      
+      experiment.push(goodbye);
+      
+      jsPsych.init({
+        experiment_structure: experiment
+      });
+    </script>
+  </body>
+</html>
