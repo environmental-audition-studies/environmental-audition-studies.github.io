@@ -180,8 +180,19 @@
       
       experiment.push(goodbye);
       
-      jsPsych.init({
-        experiment_structure: experiment
+      
+      var coinImages = $.map(coinMap, function (v) {
+        return v;
+      });
+      var diceImages = $.map(diceMap, function(v) {
+        return v;
+      });
+      var allImages = coinImages.concat(diceImages);
+      
+      jsPsych.preloadImages(allImages, function () {
+        jsPsych.init({
+          experiment_structure: experiment
+        });
       });
     </script>
   </body>
