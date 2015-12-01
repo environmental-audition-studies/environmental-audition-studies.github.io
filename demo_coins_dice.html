@@ -174,8 +174,10 @@
       experiment.push(dataBlock);
       
       var goodbye = {
-        type: "text",
-        text: '<p>This concludes the experiment.</p>'
+        type: "single-stim",
+        stimuli: ['<p>This concludes the experiment.</p>'],
+        is_html: true,
+        response_ends_trial: false
       };
       
       experiment.push(goodbye);
