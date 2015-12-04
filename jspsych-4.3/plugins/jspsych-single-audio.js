@@ -13,7 +13,15 @@
 
 		var plugin = {};
 
-		var context = new AudioContext();
+		// var context = new AudioContext();
+		var context;
+		if ("AudioContext" in window) {
+			context = new AudioContext();
+		} else if ("webkitAudioContext" in window) {
+			context = new webkitAudioContext();
+		} else {
+			context = null;
+		}
 
 		plugin.create = function(params) {
 

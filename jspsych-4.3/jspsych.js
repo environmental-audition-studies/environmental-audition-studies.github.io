@@ -1415,7 +1415,15 @@
 		}
 
 		// audio
-		var context = (typeof window.AudioContext !== 'undefined') ? new AudioContext() : null;
+		// var context = (typeof window.AudioContext !== 'undefined') ? new AudioContext() : null;
+		var context;
+		if ("AudioContext" in window) {
+			context = new AudioContext();
+		} else if ("webkitAudioContext" in window) {
+			context = new webkitAudioContext();
+		} else {
+			context = null;
+		}
 		var audio_buffers = [];
 
 		module.loadAudioFile = function(path) {
