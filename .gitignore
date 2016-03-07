@@ -7,7 +7,6 @@ demo_*
 
 *.csv
 
-*_digit*
-!mturk_*
+backward_digit_span.html
 
 !demo_coins_dice.html
