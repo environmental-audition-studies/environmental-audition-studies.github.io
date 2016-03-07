@@ -19,11 +19,15 @@
     <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
     <script>
       /*
+       * To specify which condition to use, append "?condition=1" to the URL for natural or "?condition=2" for urban.
+       * Otherwise, the condition is chosen randomly.
+       *
        * See backward digit span script in: assets/backward_digit_span_pluggable.js
        */
       
       var i;
       var subjectID;
+      var condition;
       var folder = "natural_urban_stimuli/";
       
       var timestamp = Date.now();
@@ -82,7 +86,16 @@
       var files;
       var filePaths = [];
       
-      var useGroup1 = Math.floor(Math.random() * 2);
+      if (location.search) {
+        condition = location.search.split("=")[1];
+      }
+      
+      if (condition === "1" || condition === "2") {
+        useGroup1 = (condition === "1");
+      } else {
+        console.log("Choosing random condition");
+        useGroup1 = Math.floor(Math.random() * 2);
+      }
       
       /*
       if (useGroup1) {
