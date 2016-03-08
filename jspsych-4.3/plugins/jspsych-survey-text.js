@@ -122,8 +122,9 @@
       });
       
       if (trial.submit_on_enter) {
-        $(document).keypress(function(e) {
+        $(document).keypress(function (e) {
           if (e.which === 13) {
+            $(document).off("keypress");
             $("#jspsych-survey-text-next").click();
           }
         });
