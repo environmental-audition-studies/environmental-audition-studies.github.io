@@ -31,9 +31,13 @@
  * 
  *     addDigitSpanTask(true);
  * 
+ * To specify that you are not presenting the backward digit span for the first time, 
+ * provide the useAudio parameter first, then pass true for the second parameter:
+ * 
+ *    addDigitSpanTask(true, true);
  */
 
-function addDigitSpanTask(useAudio) {
+function addDigitSpanTask(useAudio, afterFirstPresentation) {
   var currentDigitList;
   var reversedDigitString;
   var wasCorrect = true;
@@ -115,7 +119,14 @@ function addDigitSpanTask(useAudio) {
     experiment.push(volumeTest);
   }
   */
-
+  
+  var firstLine;
+  if (afterFirstPresentation) {
+    firstLine = '<p>Welcome again to the memory task.</p>';
+  } else {
+    firstLine = '<p>Welcome to the memory task.</p>';
+  }
+  
   var instructions;
   if (useAudio) {
     instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in reverse order.</p>';
@@ -125,7 +136,7 @@ function addDigitSpanTask(useAudio) {
   
   var welcome = {
     type: "text",
-    text: '<p>Welcome to the memory task.</p>' +
+    text: firstLine +
           instructions +
           '<p>To ensure high quality data, it is very important that you do not use any memory aid (e.g., pen and paper). Please do the task solely in your head.</p>' +
           '<p>When you are ready to begin, press Enter.</p>',

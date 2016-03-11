@@ -9,6 +9,7 @@
     <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
     <script src="jspsych-4.3/plugins/jspsych-multi-stim-multi-response.js"></script>
     <script src="jspsych-4.3/plugins/jspsych-survey-text.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-call-function.js"></script>
     <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css">
     <script src="assets/backward_digit_span_pluggable.js"></script>
   </head>
@@ -74,11 +75,12 @@
       
       var welcome = {
         type: "text",
-        text: '<p>Welcome to the experiment.</p>' +
+        text: '<p>Welcome to the preference judgment portion of the experiment.</p>' +
               '<p>You will be presented with a series of 40 sounds. Each sound is 5 seconds long.</p>' +
               '<p>We simply want you to rate how much you like or dislike these sounds.</p>' +
-              '<p>When you are ready to begin, press any key.</p>',
-        timing_post_trial: 0
+              '<p>When you are ready to begin, press Enter.</p>',
+        timing_post_trial: 1000,
+        cont_key: [13]
       };
       
       experiment.push(welcome);
@@ -181,7 +183,16 @@
         experiment.push(response);
       }
       
-      addDigitSpanTask(true);  // digit span task added here
+      addDigitSpanTask(true, true);  // digit span task added here
+      
+      var cancelDisallowedKeys = {
+        type: "call-function",
+        func: function () {
+          $(document).off("keydown.disallowedKeys");
+        }
+      };
+      
+      experiment.push(cancelDisallowedKeys);
       
       var questionnaire = {
         type: "survey-text",
@@ -233,7 +244,7 @@
       });
       
       var disallowedKeys = [37, 38, 39, 40, 8, 46];  // arrow keys, backspace, and delete
-      $(document).keydown(function(e) {
+      $(document).on("keydown.disallowedKeys", function (e) {
         var key = e.which;
         if (disallowedKeys.indexOf(key) > -1) {
           e.preventDefault();
