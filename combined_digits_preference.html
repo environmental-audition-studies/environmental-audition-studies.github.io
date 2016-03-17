@@ -207,11 +207,15 @@
           var csvData = jsPsych.data.dataAsCSV();
           console.log(csvData);
           var formData = {
-            exp: "TEST",
+            exp: "ATT_RESTORATION_BDS",
             subj: subjectID,
             results: csvData
           };
           $.post(
+            "http://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+		  $.post(
             "http://perfectpitchstudies.pythonanywhere.com/data",
             formData
           );
