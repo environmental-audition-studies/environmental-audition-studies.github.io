@@ -29,7 +29,7 @@
       var i;
       var subjectID;
       var condition;
-      var folder = "natural_urban_stimuli/";
+      var folder = "natural_urban_stimuli_20/";
       
       var timestamp = Date.now();
       if (userip) {
@@ -76,7 +76,7 @@
       var welcome = {
         type: "text",
         text: '<p>Welcome to the preference judgment portion of the experiment.</p>' +
-              '<p>You will be presented with a series of 40 sounds. Each sound is 5 seconds long.</p>' +
+              '<p>You will be presented with a series of 40 sounds. Each sound is 20 seconds long.</p>' +
               '<p>We simply want you to rate how much you like or dislike these sounds.</p>' +
               '<p>When you are ready to begin, press Enter.</p>',
         timing_post_trial: 1000,
@@ -141,7 +141,7 @@
         var trial = {
           type: "single-audio",
           stimuli: [stimulus],
-          timing_response: 5000,
+          timing_response: 20000,
           response_ends_trial: false,
           timing_post_trial: 0
         };
