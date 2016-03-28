@@ -91,6 +91,8 @@
       var fileArrayVars = [t1Files, t2Files, f1Files, f2Files, f3Files, f4Files, f5Files, f6Files];
       for (var i = 0; i < fileArrayVars.length; i++) {
         fileArrayVars[i] = shuffleStim(fileArrayVars[i]);
+        // uncomment next line to shorten all blocks
+        // fileArrayVars[i] = fileArrayVars[i].slice(0, 2);
       }
       
       var firstTestFiles;
@@ -108,11 +110,11 @@
       }
       
       if (useGroup1) {
-        firstTestFiles = t1Files;
-        secondTestFiles = t2Files;
+        firstTestFiles = fileArrayVars[0];
+        secondTestFiles = fileArrayVars[1];
       } else {
-        firstTestFiles = t2Files;
-        secondTestFiles = t1Files;
+        firstTestFiles = fileArrayVars[1];
+        secondTestFiles = fileArrayVars[0];
       }
       
       
@@ -158,11 +160,8 @@
       function addTrials(stimuli, giveFeedback) {
         var stimulus;
         var word;
-        var stimLen = stimuli.length;
-        // uncomment next line to shorten all blocks
-        // stimLen = 2
         
-        for (var i = 0; i < stimLen; i++) {
+        for (var i = 0; i < stimuli.length; i++) {
           stimulus = stimuli[i];
           word = stimulus.split("_").slice(-1)[0].split(".")[0];
           
