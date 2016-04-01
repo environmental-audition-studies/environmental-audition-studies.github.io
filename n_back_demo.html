@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>N-Back Demo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-5.0.2/jspsych.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-text.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-single-audio.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-call-function.js"></script>
+    <link href="jspsych-5.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="jspsych-target"></div>
+    <script>
+      /*
+       * This uses jsPsych 5, so there are some differences from the older experiments.
+       * See the online documentation for details: http://docs.jspsych.org
+       */
+      
+      var folder = "n_back_stimuli/";
+      var defaultITI = 500;
+      var MAX_NON_TARGETS = 20;
+      var MAX_TARGETS = 10;
+      
+      var TOTAL_LETTERS = MAX_NON_TARGETS + MAX_TARGETS;
+      var timeline = [];
+      
+      var filenames = ['B.wav', 'C.wav', 'D.wav', 'F.wav', 'G.wav', 'H.wav', 'J.wav', 'K.wav', 'L.wav', 'M.wav', 'N.wav', 'P.wav', 'Q.wav', 'R.wav', 'S.wav', 'T.wav', 'V.wav', 'W.wav', 'Y.wav', 'Z.wav'];
+      var filepaths = [];
+      for (var i = 0; i < filenames.length; i++) {
+        filepaths.push(folder + filenames[i]);
+      }
+      
+      
+      function useNonTarget(nonTargetsRemaining, targetsRemaining) {
+        var maxInt = nonTargetsRemaining + targetsRemaining;
+        var randInt = Math.floor(Math.random() * maxInt);
+        return randInt < nonTargetsRemaining;
+      }
+      
+      
+      function getSample() {
+        return jsPsych.randomization.sample(filepaths, 1, true)[0];
+      }
+      
+      
+      function generateStimuli(n) {
+        var stimuli = [];
+        var nonTargetsRemaining = MAX_NON_TARGETS;
+        var targetsRemaining = MAX_TARGETS;
+        var target;
+        var sample;
+        
+        for (var i = 0; i < TOTAL_LETTERS; i++) {
+          if (i < n) {
+            stimuli.push(getSample());
+            nonTargetsRemaining -= 1;
+          } else {
+            target = stimuli[i-n];
+            sample = target;
+            if (useNonTarget(nonTargetsRemaining, targetsRemaining)) {
+              while (sample === target) {
+                sample = getSample();
+              }
+              nonTargetsRemaining -=1;
+            } else {
+              targetsRemaining -=1;
+            }
+            stimuli.push(sample);
+          }
+        }
+        
+        return stimuli;
+      }
+      
+      
+      function addTrials(n) {
+        var stimuli = generateStimuli(n);
+        var stimulus;
+        var nBefore;
+        var isTarget;
+        
+        for (var i = 0; i < stimuli.length; i++) {
+          stimulus = stimuli[i];
+          nBefore = stimuli[i-n];
+          isTarget = (stimulus === nBefore) ? 1 : 0;
+          
+          var audioTrial = {
+            type: "single-audio",
+            stimulus: stimulus,
+            timing_response: 3500,
+            choices: ["1", "2"],
+            response_ends_trial: false,
+            timing_post_trial: 0,
+            data: {
+              n: n,
+              stim: stimulus,
+              n_before: nBefore,
+              is_target: isTarget
+            }
+          };
+          
+          timeline.push(audioTrial);
+        }
+      }
+      
+      
+      var instr2Back = {
+        type: "text",
+        text: '<p>2-back</p><p>Press 1 for targets and 2 for non-targets</p>',
+        timing_post_trial: defaultITI
+      };
+      
+      timeline.push(instr2Back);
+      addTrials(2);
+      
+      var instr3Back = {
+        type: "text",
+        text: '<p>3-back</p><p>Press 1 for targets and 2 for non-targets</p>',
+        timing_post_trial: defaultITI
+      };
+      
+      timeline.push(instr3Back);
+      addTrials(3);
+      
+      var dataBlock = {
+        type: "call-function",
+        func: function () {
+          jsPsych.data.displayData("json");  // currently just displays final data in JSON format on screen
+        }
+      };
+      
+      timeline.push(dataBlock);
+      
+      jsPsych.init({
+        timeline: timeline,
+        display_element: $("#jspsych-target")
+      });
+    </script>
+  </body>
+</html>
