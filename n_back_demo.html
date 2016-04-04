@@ -68,7 +68,7 @@
       
       
       /*
-       * Returns an array of stimuli based on n.
+       * Returns an array of stimuli based on load factor n.
        */
       function generateStimuli(n) {
         var stimuli = [];
@@ -101,7 +101,8 @@
       
       
       /*
-       * Appends a number of audio trials equal to TOTAL_LETTERS based on n.
+       * Appends a number of audio trials equal to TOTAL_LETTERS
+       * based on load factor n.
        */
       function addTrials(n) {
         var stimuli = generateStimuli(n);
