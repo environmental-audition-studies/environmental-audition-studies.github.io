@@ -13,6 +13,10 @@
   <body>
     <div id="jspsych-target"></div>
     <script>
+      var userip;
+    </script>
+    <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
+    <script>
       /*
        * Specify target note by appending "?target={note}" to the URL, replacing "#" with "s"
        * For example, to specify F#, append this: ?target=Fs
@@ -24,6 +28,7 @@
       var numTargets = 4;
       var numNonTargets = 12;
       
+      var subjectID;
       var timeline = [];
       var counts = {
         total_hits: 0,
@@ -35,11 +40,21 @@
       var noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
       var suffixes = ['.wav', '-1.wav', '1.wav'];
       
+      var timestamp = Date.now();
+      if (userip) {
+        userip = userip.replace(/:/g, ".");
+        subjectID = userip + "-" + timestamp;
+      } else {
+        subjectID = timestamp;
+      }
       if (location.search) {
-        target = location.search.split("=")[1].replace("s", "#");
+        target = location.search.split("=")[1].replace("s", "#").toUpperCase();
       }
       
-      jsPsych.data.addProperties({target_note: target});
+      jsPsych.data.addProperties({
+        subject: subjectID,
+        target_note: target
+      });
       
       
       function fileIsTarget(filename, target) {
@@ -110,7 +125,7 @@
             data: {
               sequence_num: sequenceNum,
               stim: stim,
-              is_target: fileIsTarget(stim, target)
+              is_target: fileIsTarget(stim, target) ? 1 : 0
             },
             on_finish: function (trialData) {
               var keyPress = trialData.key_press;
@@ -164,7 +179,21 @@
       var dataBlock = {
         type: "call-function",
         func: function () {
-          jsPsych.data.displayData("json");
+          var csvData = jsPsych.data.dataAsCSV();
+          console.log(csvData);
+          var formData = {
+            exp: "TEST",
+            subj: subjectID,
+            results: csvData
+          };
+          $.post(
+            "http://perfectpitchstudies.pythonanywhere.com/data",
+            formData
+          );
+          $.post(
+            "http://svanhedger.pythonanywhere.com/data",
+            formData
+          );
         },
         timing_post_trial: 0
       };
@@ -174,7 +203,7 @@
       var goodbye = {
         type: "single-stim",
         stimulus: function () {
-          return "<p>This concludes the experiment.</p><p>Hits: " + counts.total_hits + "</p><p>False Alarms: " + counts.total_false_alarms + "</p>";
+          return "<p>This concludes the experiment.</p><p>Hits: " + counts.total_hits + "</p><p>False alarms: " + counts.total_false_alarms + "</p>";
         },
         is_html: true,
         response_ends_trial: false
