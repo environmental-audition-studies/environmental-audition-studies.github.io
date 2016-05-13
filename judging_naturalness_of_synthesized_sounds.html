@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Judging Naturalness of Synthesized Sounds</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-4.3/jspsych.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-audio.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-multi-stim-multi-response.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-survey-text.js"></script>
+    <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <script>
+      var userip;
+    </script>
+    <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
+    <script>
+      var i;
+      var subjectID;
+      var folder = "texture_synthesis_normalized/";
+      
+      var timestamp = Date.now();
+      if (userip) {
+        userip = userip.replace(/:/g, ".");
+        subjectID = userip + "-" + timestamp;
+      } else {
+        subjectID = timestamp;
+      }
+      jsPsych.data.addProperties({subject: subjectID});
+      
+      var experiment = [];
+      
+      var consent = {
+        type: "single-stim",
+        stimuli: [folder + "mturk_consent.png"],
+        prompt: '<p>Please wait for the consent form to load. If you agree, please press any key to continue on to the study.</p>',
+        timing_post_trial: 1000
+      };
+      
+      experiment.push(consent);
+      
+      var volumeTest = {
+        type: "single-audio",
+        stimuli: [folder + "volumetest.wav"],
+        timing_response: 10000,
+        response_ends_trial: false,
+        prompt: "<p>Before we begin, please adjust your volume so that the sound currently being played is at a comfortable listening level.</p>",
+        timing_post_trial: 0
+      };
+      
+      experiment.push(volumeTest);
+      
+      var welcome = {
+        type: "text",
+        text: '<p>Welcome to the experiment.</p>' +
+              '<p>You will be presented with a series of 45 synthesized sounds. Each sound is 5 seconds long.</p>' +
+              '<p>We simply want you to rate how "urban" or "natural" these sounds are to you, as in how much do they make you think about a city or town vs. how much do they make you think about nature.</p>' +
+              '<p>When you are ready to begin, press any key.</p>',
+        timing_post_trial: 0
+      };
+      
+      experiment.push(welcome);
+      
+      var filePaths = [];
+      var files = ['applause_full.wav', 'applause_marginals.wav', 'applause_spectrum.wav', 'bees_full.wav', 'bees_marginals.wav', 'bees_spectrum.wav', 'bubbling_water_full.wav', 'bubbling_water_marginals.wav', 'bubbling_water_spectrum.wav', 'cocktail_party_full.wav', 'cocktail_party_marginals.wav', 'cocktail_party_spectrum.wav', 'fire_full.wav', 'fire_marginals.wav', 'fire_spectrum.wav', 'helicopter_full.wav', 'helicopter_marginals.wav', 'helicopter_spectrum.wav', 'insects_full.wav', 'insects_marginals.wav', 'insects_spectrum.wav', 'jackhammer_full.wav', 'jackhammer_marginals.wav', 'jackhammer_spectrum.wav', 'rain_full.wav', 'rain_marginals.wav', 'rain_spectrum.wav', 'rustling_paper_full.wav', 'rustling_paper_marginals.wav', 'rustling_paper_spectrum.wav', 'sparrows_full.wav', 'sparrows_marginals.wav', 'sparrows_spectrum.wav', 'stream_full.wav', 'stream_marginals.wav', 'stream_spectrum.wav', 'train_full.wav', 'train_marginals.wav', 'train_spectrum.wav', 'waves_full.wav', 'waves_marginals.wav', 'waves_spectrum.wav', 'wind_full.wav', 'wind_marginals.wav', 'wind_spectrum.wav'];
+      
+      // files = files.slice(0, 2);  // uncomment for testing final screens
+      
+      var numFiles = files.length;
+      
+      for (i = 0; i < numFiles; i += 1) {
+        filePaths.push(folder + encodeURIComponent(files[i]));
+      }
+      
+      var allStimuli = jsPsych.randomization.shuffle(filePaths);
+      
+      var fixation = {
+        type: "multi-stim-multi-response",
+        stimuli: [["***", "**", "*"]],
+        is_html: true,
+        timing_stim: [500, 500, 500],
+        timing_response: 1500,
+        choices: [null, null, null],
+        response_ends_trial: false,
+        timing_post_trial: 0
+      };
+      
+      for (i = 0; i < numFiles; i += 1) {
+        var soundtype;
+        var stimulus = allStimuli[i];
+        
+        var trial = {
+          type: "single-audio",
+          stimuli: [stimulus],
+          timing_response: 5000,
+          response_ends_trial: false,
+          timing_post_trial: 0
+        };
+        
+        var filePath = decodeURIComponent(stimulus);
+        var splitFile = filePath.split('/')[1].replace('.wav','').split('_');
+        var soundtype = splitFile.slice(0, -1).join('_');
+        var synthtype = splitFile.slice(-1)[0];
+        
+        var response = {
+          type: "single-stim",
+          stimuli: ['<p>Was the sound you heard urban or natural?</p>' +
+                    '<p>Use the numbers 1 through 7 to make your response. "1" corresponds to "very urban". "4" corresponds to "neither urban nor natural", and "7" corresponds to "very natural"</p>'],
+          is_html: true,
+          choices: ["1", "2", "3", "4", "5", "6", "7"],
+          data: [{
+            file: filePath,
+            soundtype: soundtype,
+            synthtype: synthtype
+          }],
+          timing_post_trial: 0
+        };
+        
+        experiment.push(fixation);
+        experiment.push(trial);
+        experiment.push(response);
+      }
+      
+      var questionnaire = {
+        type: "survey-text",
+        preamble: ['The following is a questionnaire to gauge basic demographic information.'],
+        questions: [[
+          'What is your gender? If you prefer not to answer, please type "prefer not to answer."',
+          'What ethnicity do you primarily identify with? Please select among the options of "White/Caucasian", "Black/African American", "Asian/Asian American", "Hispanic/Latino/Chicano", "Native American/Alaska Native", "Native Hawaiian/Pacific Islander", or "Other"',
+          'What is your home zip code? (optional)',
+          'Do you have any comments, questions, or suggestions regarding this study?'
+        ]],
+        on_finish: function () {
+          var csvData = jsPsych.data.dataAsCSV();
+          console.log(csvData);
+          var formData = {
+            // exp: "judging_naturalness_of_synthesized_sounds",  // comment out for testing
+            exp: "TEST",  // uncomment for testing
+            subj: subjectID,
+            results: csvData
+          };
+          $.post(
+            "http://perfectpitchstudies.pythonanywhere.com/data",
+            formData
+          );
+        }
+      };
+      
+      experiment.push(questionnaire);
+      
+      var goodbye = {
+        type: "single-stim",
+        stimuli: function () {
+          var pageText = '<p>This concludes the experiment. Thank you for your participation.</p>' +
+                         '<p>Below is your subject ID. Please copy it.</p>' +
+                         '<p>' + subjectID + '</p>';
+          return [pageText];
+        },
+        is_html: true,
+        response_ends_trial: false,
+        timing_post_trial: 0
+      };
+      
+      experiment.push(goodbye);
+      
+      jsPsych.init({
+        experiment_structure: experiment
+      });
+    </script>
+  </body>
+</html>
