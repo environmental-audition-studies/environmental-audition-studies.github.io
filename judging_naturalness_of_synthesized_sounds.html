@@ -136,13 +136,17 @@
           var csvData = jsPsych.data.dataAsCSV();
           console.log(csvData);
           var formData = {
-            // exp: "judging_naturalness_of_synthesized_sounds",  // comment out for testing
-            exp: "TEST",  // uncomment for testing
+            exp: "nat_syn",  // comment out for testing
+            // exp: "TEST",  // uncomment for testing
             subj: subjectID,
             results: csvData
           };
           $.post(
             "http://perfectpitchstudies.pythonanywhere.com/data",
+            formData
+          );
+          $.post(
+            "205.208.68.176",
             formData
           );
         }
