@@ -89,7 +89,16 @@ jsPsych.plugins['survey-text'] = (function() {
       // next trial
       jsPsych.finishTrial(trialdata);
     });
-
+    
+    if (trial.submit_on_enter) {
+      $(document).on("keypress.surveyText", function (e) {
+        if (e.which === 13) {
+          $(document).off("keypress.surveyText");
+          $("#jspsych-survey-text-next").click();
+        }
+      });
+    }
+    
     var startTime = (new Date()).getTime();
   };
 
