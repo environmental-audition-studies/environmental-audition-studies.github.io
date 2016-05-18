@@ -95,7 +95,7 @@ jsPsych.plugins['survey-text'] = (function() {
     });
     
     if (trial.submit_on_enter) {
-      $(document).on("keypress.surveyText", function (e) {
+      $(document).on("keydown.surveyText", function (e) {
         if (e.which === 13) {
           $(document).off("keypress.surveyText");
           $("#jspsych-survey-text-next").click();
