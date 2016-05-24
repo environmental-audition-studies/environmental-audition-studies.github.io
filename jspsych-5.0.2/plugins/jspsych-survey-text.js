@@ -109,7 +109,7 @@ jsPsych.plugins['survey-text'] = (function() {
     if (trial.submit_on_enter || trial.submit_on_tab) {
       $(document).on("keydown.surveyText", function (e) {
         if (submitKeys.indexOf(e.which) > -1) {
-          $(document).off("keypress.surveyText");
+          $(document).off("keydown.surveyText");
           $("#jspsych-survey-text-next").click();
         }
       });
