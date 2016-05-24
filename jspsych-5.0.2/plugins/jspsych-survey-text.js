@@ -99,9 +99,16 @@ jsPsych.plugins['survey-text'] = (function() {
       jsPsych.finishTrial(trialdata);
     });
     
+    var submitKeys = [];
     if (trial.submit_on_enter) {
+      submitKeys.push(13);
+    }
+    if (trial.submit_on_tab) {
+      submitKeys.push(9);
+    }
+    if (trial.submit_on_enter || trial.submit_on_tab) {
       $(document).on("keydown.surveyText", function (e) {
-        if (e.which === 13) {
+        if (submitKeys.indexOf(e.which) > -1) {
           $(document).off("keypress.surveyText");
           $("#jspsych-survey-text-next").click();
         }
