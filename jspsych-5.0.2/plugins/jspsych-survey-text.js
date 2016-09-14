@@ -54,7 +54,11 @@ jsPsych.plugins['survey-text'] = (function() {
       $("#jspsych-survey-text-" + i).append('<p class="jspsych-survey-text">' + trial.questions[i] + '</p>');
 
       // add text box
-      $("#jspsych-survey-text-" + i).append('<textarea name="#jspsych-survey-text-response-' + i + '" cols="' + trial.columns[i] + '" rows="' + trial.rows[i] + '"></textarea>');
+      if (trial.input_numbers) {
+        $("#jspsych-survey-text-" + i).append('<input type="tel" name="#jspsych-survey-text-response-' + i + '"></input>');
+      } else {
+        $("#jspsych-survey-text-" + i).append('<textarea name="#jspsych-survey-text-response-' + i + '" cols="' + trial.columns[i] + '" rows="' + trial.rows[i] + '"></textarea>');
+      }
     }
 
     // add submit button
@@ -62,7 +66,7 @@ jsPsych.plugins['survey-text'] = (function() {
       'id': 'jspsych-survey-text-next',
       'class': 'jspsych-btn jspsych-survey-text'
     }));
-    $("#jspsych-survey-text-next").html('Submit Answers');
+    $("#jspsych-survey-text-next").html('Submit');
     $("#jspsych-survey-text-next").click(function() {
       // measure response time
       var endTime = (new Date()).getTime();
@@ -72,7 +76,12 @@ jsPsych.plugins['survey-text'] = (function() {
       var question_data = {};
       $("div.jspsych-survey-text-question").each(function(index) {
         var id = "Q" + index;
-        var val = $(this).children('textarea').val();
+        var val;
+        if (trial.input_numbers) {
+          val = $(this).children('input').val();
+        } else {
+          val = $(this).children('textarea').val();
+        }
         var obje = {};
         obje[id] = val;
         $.extend(question_data, obje);
@@ -89,7 +98,25 @@ jsPsych.plugins['survey-text'] = (function() {
       // next trial
       jsPsych.finishTrial(trialdata);
     });
-
+    
+    var submitKeys = [];
+    if (trial.submit_on_enter) {
+      submitKeys.push(13);
+    }
+    if (trial.submit_on_tab) {
+      submitKeys.push(9);
+    }
+    if (trial.submit_on_enter || trial.submit_on_tab) {
+      $(document).on("keydown.surveyText", function (e) {
+        if (submitKeys.indexOf(e.which) > -1) {
+          $("#jspsych-survey-text-next").click();
+        }
+      });
+      $("#jspsych-survey-text-next").on("click", function () {
+        $(document).off("keydown.surveyText");
+      });
+    }
+    
     var startTime = (new Date()).getTime();
   };
 

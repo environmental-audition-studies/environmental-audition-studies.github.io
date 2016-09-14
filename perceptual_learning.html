@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Perceptual Learning and Restoration</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-4.3/jspsych.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-audio.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-multi-stim-multi-response.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-survey-text.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-call-function.js"></script>
+    <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <script>
+      var userip;
+    </script>
+    <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
+    <script>
+      /*
+       * To specify which condition to use, append "?condition=1" to the URL for t1 first or "?condition=2" for t2 first.
+       * Otherwise, the condition is chosen randomly.
+       *
+       */
+      
+      var i;
+      var subjectID;
+      var condition;
+      var useGroup1;
+      var folder = "perceptual_learning_stimuli/";
+      var defaultITI = 500;  // ms
+      
+      var timestamp = Date.now();
+      if (userip) {
+        userip = userip.replace(/:/g, ".");
+        subjectID = userip + "-" + timestamp;
+      } else {
+        subjectID = timestamp;
+      }
+      jsPsych.data.addProperties({subject: subjectID});
+      
+      var experiment = [];
+      
+      var consent = {
+        type: "single-stim",
+        stimuli: [folder + "mturk_consent.png"],
+        prompt: '<p>Please wait for the consent form to load. If you agree, please press any key to continue on to the study.</p>',
+        timing_post_trial: defaultITI
+      };
+      
+      experiment.push(consent);
+      
+      var preVolumeTest = {
+        type: "text",
+        text: '<p>This task requires your volume to be at a comfortable level. Press any key to continue and some white noise will play. Please adjust your volume so that the sound that is played is at a comfortable listening level.</p>',
+        timing_post_trial: defaultITI
+      };
+      
+      experiment.push(preVolumeTest);
+      
+      var volumeTest = {
+        type: "single-audio",
+        stimuli: [folder + "volumetest.wav"],
+        timing_response: 10000,
+        response_ends_trial: false,
+        timing_post_trial: defaultITI
+      };
+      
+      experiment.push(volumeTest);
+
+
+      var t1Files = ['t1/r_bait.wav', 't1/r_bat.wav', 't1/r_beam.wav', 't1/r_bet.wav', 't1/r_bleat.wav', 't1/r_bliss.wav', 't1/r_blotch.wav', 't1/r_bluff.wav', 't1/r_book.wav', 't1/r_brook.wav', 't1/r_bud.wav', 't1/r_chant.wav', 't1/r_cheese.wav', 't1/r_clog.wav', 't1/r_club.wav', 't1/r_clue.wav', 't1/r_crawl.wav', 't1/r_creek.wav', 't1/r_crop.wav', 't1/r_cup.wav', 't1/r_dash.wav', 't1/r_deed.wav', 't1/r_dig.wav', 't1/r_dodge.wav', 't1/r_dude.wav', 't1/r_dump.wav', 't1/r_eat.wav', 't1/r_fame.wav', 't1/r_feast.wav', 't1/r_feet.wav', 't1/r_flaw.wav', 't1/r_flock.wav', 't1/r_fraud.wav', 't1/r_frock.wav', 't1/r_fume.wav', 't1/r_gap.wav', 't1/r_give.wav', 't1/r_glue.wav', 't1/r_good.wav', 't1/r_grab.wav', 't1/r_greet.wav', 't1/r_gun.wav', 't1/r_heap.wav', 't1/r_hill.wav', 't1/r_hock.wav', 't1/r_jaunt.wav', 't1/r_kiss.wav', 't1/r_last.wav', 't1/r_lawn.wav', 't1/r_lean.wav', 't1/r_leg.wav', 't1/r_list.wav', 't1/r_lost.wav', 't1/r_lunge.wav', 't1/r_mat.wav', 't1/r_meek.wav', 't1/r_mist.wav', 't1/r_mooch.wav', 't1/r_moose.wav', 't1/r_nap.wav', 't1/r_neck.wav', 't1/r_nine.wav', 't1/r_nook.wav', 't1/r_noon.wav', 't1/r_peace.wav', 't1/r_peek.wav', 't1/r_plea.wav', 't1/r_plume.wav', 't1/r_pot.wav', 't1/r_prune.wav', 't1/r_quip.wav', 't1/r_rack.wav', 't1/r_rasp.wav', 't1/r_reef.wav', 't1/r_rich.wav', 't1/r_rock.wav', 't1/r_rough.wav', 't1/r_sauce.wav', 't1/r_seek.wav', 't1/r_ship.wav', 't1/r_sift.wav', 't1/r_six.wav', 't1/r_sketch.wav', 't1/r_slot.wav', 't1/r_sped.wav', 't1/r_speed.wav', 't1/r_spook.wav', 't1/r_spot.wav', 't1/r_stag.wav', 't1/r_stem.wav', 't1/r_stock.wav', 't1/r_teach.wav', 't1/r_ten.wav', 't1/r_thread.wav', 't1/r_treat.wav', 't1/r_tuck.wav', 't1/r_waft.wav', 't1/r_web.wav', 't1/r_weed.wav', 't1/r_wish.wav'];
+      var t2Files = ['t2/r_beach.wav', 't2/r_beak.wav', 't2/r_beg.wav', 't2/r_black.wav', 't2/r_blast.wav', 't2/r_bless.wav', 't2/r_block.wav', 't2/r_booth.wav', 't2/r_boss.wav', 't2/r_buck.wav', 't2/r_bus.wav', 't2/r_calf.wav', 't2/r_cause.wav', 't2/r_cheek.wav', 't2/r_chew.wav', 't2/r_chip.wav', 't2/r_chop.wav', 't2/r_cloak.wav', 't2/r_cloth.wav', 't2/r_cop.wav', 't2/r_could.wav', 't2/r_crept.wav', 't2/r_cut.wav', 't2/r_dew.wav', 't2/r_dish.wav', 't2/r_dot.wav', 't2/r_draw.wav', 't2/r_edge.wav', 't2/r_fee.wav', 't2/r_fluff.wav', 't2/r_flute.wav', 't2/r_fog.wav', 't2/r_fool.wav', 't2/r_fought.wav', 't2/r_fresh.wav', 't2/r_gem.wav', 't2/r_gift.wav', 't2/r_gleam.wav', 't2/r_goon.wav', 't2/r_grad.wav', 't2/r_green.wav', 't2/r_hat.wav', 't2/r_head.wav', 't2/r_hip.wav', 't2/r_hop.wav', 't2/r_hunch.wav', 't2/r_hush.wav', 't2/r_itch.wav', 't2/r_jog.wav', 't2/r_key.wav', 't2/r_kid.wav', 't2/r_knock.wav', 't2/r_lag.wav', 't2/r_leak.wav', 't2/r_lip.wav', 't2/r_loop.wav', 't2/r_match.wav', 't2/r_moon.wav', 't2/r_mud.wav', 't2/r_need.wav', 't2/r_night.wav', 't2/r_noose.wav', 't2/r_ought.wav', 't2/r_pad.wav', 't2/r_pass.wav', 't2/r_path.wav', 't2/r_pawn.wav', 't2/r_peg.wav', 't2/r_pin.wav', 't2/r_please.wav', 't2/r_pump.wav', 't2/r_rap.wav', 't2/r_ridge.wav', 't2/r_rot.wav', 't2/r_rude.wav', 't2/r_said.wav', 't2/r_sash.wav', 't2/r_saw.wav', 't2/r_sheep.wav', 't2/r_shin.wav', 't2/r_shine.wav', 't2/r_slick.wav', 't2/r_soon.wav', 't2/r_split.wav', 't2/r_steep.wav', 't2/r_stunt.wav', 't2/r_suit.wav', 't2/r_sun.wav', 't2/r_tap.wav', 't2/r_tea.wav', 't2/r_team.wav', 't2/r_thick.wav', 't2/r_thresh.wav', 't2/r_ton.wav', 't2/r_tooth.wav', 't2/r_trod.wav', 't2/r_weak.wav', 't2/r_wheat.wav', 't2/r_wood.wav', 't2/r_your.wav'];
+      var f1Files = ['f1/r_bead.wav', 'f1/r_bit.wav', 'f1/r_blessed.wav', 'f1/r_bomb.wav', 'f1/r_brew.wav', 'f1/r_calm.wav', 'f1/r_cheat.wav', 'f1/r_check.wav', 'f1/r_chest.wav', 'f1/r_chill.wav', 'f1/r_choose.wav', 'f1/r_claw.wav', 'f1/r_clot.wav', 'f1/r_crest.wav', 'f1/r_cub.wav', 'f1/r_cure.wav', 'f1/r_deal.wav', 'f1/r_dock.wav', 'f1/r_fish.wav', 'f1/r_forth.wav', 'f1/r_grease.wav', 'f1/r_hedge.wav', 'f1/r_hoop.wav', 'f1/r_launch.wav', 'f1/r_least.wav', 'f1/r_lept.wav', 'f1/r_loss.wav', 'f1/r_mock.wav', 'f1/r_myth.wav', 'f1/r_new.wav', 'f1/r_nip.wav', 'f1/r_plod.wav', 'f1/r_punch.wav', 'f1/r_pure.wav', 'f1/r_reach.wav', 'f1/r_rick.wav', 'f1/r_room.wav', 'f1/r_shed.wav', 'f1/r_shrug.wav', 'f1/r_snoop.wav', 'f1/r_speak.wav', 'f1/r_spool.wav', 'f1/r_street.wav', 'f1/r_tall.wav', 'f1/r_test.wav', 'f1/r_took.wav', 'f1/r_top.wav', 'f1/r_troop.wav', 'f1/r_tune.wav', 'f1/r_who.wav'];
+      var f2Files = ['f2/r_beast.wav', 'f2/r_bolt.wav', 'f2/r_boost.wav', 'f2/r_budge.wav', 'f2/r_cease.wav', 'f2/r_charge.wav', 'f2/r_cook.wav', 'f2/r_crutch.wav', 'f2/r_deep.wav', 'f2/r_end.wav', 'f2/r_fate.wav', 'f2/r_fed.wav', 'f2/r_flood.wav', 'f2/r_free1.wav', 'f2/r_get.wav', 'f2/r_goof.wav', 'f2/r_grit.wav', 'f2/r_heat.wav', 'f2/r_hit.wav', 'f2/r_inch.wav', 'f2/r_kit.wav', 'f2/r_lead.wav', 'f2/r_lid.wav', 'f2/r_mean.wav', 'f2/r_mess.wav', 'f2/r_nest.wav', 'f2/r_next.wav', 'f2/r_notch.wav', 'f2/r_odd.wav', 'f2/r_paid.wav', 'f2/r_perk.wav', 'f2/r_pest.wav', 'f2/r_pinch.wav', 'f2/r_probe.wav', 'f2/r_raw.wav', 'f2/r_ray.wav', 'f2/r_reek.wav', 'f2/r_rug.wav', 'f2/r_scare.wav', 'f2/r_scotch.wav', 'f2/r_skid.wav', 'f2/r_skit.wav', 'f2/r_slog.wav', 'f2/r_spice.wav', 'f2/r_sup.wav', 'f2/r_teen.wav', 'f2/r_tick.wav', 'f2/r_toss.wav', 'f2/r_wean.wav', 'f2/r_wrist.wav'];
+      var f3Files = ['f3/r_act.wav', 'f3/r_all.wav', 'f3/r_bob.wav', 'f3/r_boom.wav', 'f3/r_box.wav', 'f3/r_cast.wav', 'f3/r_cat.wav', 'f3/r_caught.wav', 'f3/r_chart.wav', 'f3/r_cry.wav', 'f3/r_curse.wav', 'f3/r_deuce.wav', 'f3/r_did.wav', 'f3/r_doom.wav', 'f3/r_flaunt.wav', 'f3/r_gel.wav', 'f3/r_gin.wav', 'f3/r_goat.wav', 'f3/r_gosh.wav', 'f3/r_grade.wav', 'f3/r_greek.wav', 'f3/r_half.wav', 'f3/r_he.wav', 'f3/r_heed.wav', 'f3/r_hiss.wav', 'f3/r_hut.wav', 'f3/r_jay.wav', 'f3/r_joke.wav', 'f3/r_lash.wav', 'f3/r_leach.wav', 'f3/r_leap.wav', 'f3/r_lie.wav', 'f3/r_loon.wav', 'f3/r_lung.wav', 'f3/r_note.wav', 'f3/r_nut.wav', 'f3/r_pew.wav', 'f3/r_rut.wav', 'f3/r_sack.wav', 'f3/r_seat.wav', 'f3/r_sip.wav', 'f3/r_stress.wav', 'f3/r_stuff.wav', 'f3/r_swift.wav', 'f3/r_tan.wav', 'f3/r_thud.wav', 'f3/r_tip.wav', 'f3/r_tough.wav', 'f3/r_tred.wav', 'f3/r_wasp.wav'];
+      var f4Files = ['f4/r_badge.wav', 'f4/r_bag.wav', 'f4/r_best.wav', 'f4/r_bop.wav', 'f4/r_cheap.wav', 'f4/r_clip.wav', 'f4/r_coast.wav', 'f4/r_crunch.wav', 'f4/r_deaf.wav', 'f4/r_duke.wav', 'f4/r_fake.wav', 'f4/r_fling.wav', 'f4/r_frill.wav', 'f4/r_front.wav', 'f4/r_gape.wav', 'f4/r_hatch.wav', 'f4/r_hike.wav', 'f4/r_hunt.wav', 'f4/r_knit.wav', 'f4/r_lap.wav', 'f4/r_lend.wav', 'f4/r_loose.wav', 'f4/r_lush.wav', 'f4/r_mast.wav', 'f4/r_math.wav', 'f4/r_mom.wav', 'f4/r_moth.wav', 'f4/r_peat.wav', 'f4/r_pent.wav', 'f4/r_pipe.wav', 'f4/r_quit.wav', 'f4/r_rib.wav', 'f4/r_seep.wav', 'f4/r_shook.wav', 'f4/r_shout.wav', 'f4/r_sin.wav', 'f4/r_skip.wav', 'f4/r_smart.wav', 'f4/r_solve.wav', 'f4/r_soup.wav', 'f4/r_spit.wav', 'f4/r_spud.wav', 'f4/r_stack.wav', 'f4/r_such.wav', 'f4/r_toad.wav', 'f4/r_tree.wav', 'f4/r_trip.wav', 'f4/r_wed.wav', 'f4/r_weep.wav', 'f4/r_wreck.wav'];
+      var f5Files = ['f5/r_bad.wav', 'f5/r_beck.wav', 'f5/r_breeze.wav', 'f5/r_bug.wav', 'f5/r_cool.wav', 'f5/r_crude.wav', 'f5/r_dill.wav', 'f5/r_dove.wav', 'f5/r_east.wav', 'f5/r_fast.wav', 'f5/r_flap.wav', 'f5/r_full.wav', 'f5/r_greed.wav', 'f5/r_haul.wav', 'f5/r_hawk.wav', 'f5/r_law.wav', 'f5/r_lit.wav', 'f5/r_loot.wav', 'f5/r_lose.wav', 'f5/r_moot.wav', 'f5/r_nab.wav', 'f5/r_neat.wav', 'f5/r_nick.wav', 'f5/r_nod.wav', 'f5/r_off.wav', 'f5/r_pack.wav', 'f5/r_pig.wav', 'f5/r_pitch.wav', 'f5/r_pomp.wav', 'f5/r_put.wav', 'f5/r_raid.wav', 'f5/r_roost.wav', 'f5/r_see.wav', 'f5/r_shove.wav', 'f5/r_slip.wav', 'f5/r_sly.wav', 'f5/r_sod.wav', 'f5/r_spoon.wav', 'f5/r_stash.wav', 'f5/r_stew.wav', 'f5/r_swig.wav', 'f5/r_task.wav', 'f5/r_thief.wav', 'f5/r_through.wav', 'f5/r_trade.wav', 'f5/r_two.wav', 'f5/r_up.wav', 'f5/r_vast.wav', 'f5/r_wept.wav', 'f5/r_wok.wav'];
+      var f6Files = ['f6/r_bar.wav', 'f6/r_bleak.wav', 'f6/r_bleed.wav', 'f6/r_chess.wav', 'f6/r_court.wav', 'f6/r_crack.wav', 'f6/r_crash.wav', 'f6/r_crate.wav', 'f6/r_crime.wav', 'f6/r_doubt.wav', 'f6/r_dune.wav', 'f6/r_ebb.wav', 'f6/r_far.wav', 'f6/r_fern.wav', 'f6/r_fit.wav', 'f6/r_fleet.wav', 'f6/r_float.wav', 'f6/r_gash.wav', 'f6/r_gasp.wav', 'f6/r_gnat.wav', 'f6/r_goose.wav', 'f6/r_grief.wav', 'f6/r_gum.wav', 'f6/r_hand.wav', 'f6/r_hid.wav', 'f6/r_kind.wav', 'f6/r_life.wav', 'f6/r_lime.wav', 'f6/r_line.wav', 'f6/r_map.wav', 'f6/r_much.wav', 'f6/r_oak.wav', 'f6/r_ooze.wav', 'f6/r_priest.wav', 'f6/r_prop.wav', 'f6/r_raise.wav', 'f6/r_rid.wav', 'f6/r_rob.wav', 'f6/r_sad.wav', 'f6/r_scan.wav', 'f6/r_shank.wav', 'f6/r_shoe.wav', 'f6/r_sledge.wav', 'f6/r_snipe.wav', 'f6/r_sock.wav', 'f6/r_stop.wav', 'f6/r_stump.wav', 'f6/r_touch.wav', 'f6/r_wide.wav', 'f6/r_wife.wav'];
+      
+      
+      function shuffleStim(fileArray) {
+        fileArray = jsPsych.randomization.shuffle(fileArray);
+        for (var i = 0;  i < fileArray.length; i++) {
+          fileArray[i] = folder + fileArray[i];
+        }
+        return fileArray;
+      }
+      
+      var fileArrayVars = [t1Files, t2Files, f1Files, f2Files, f3Files, f4Files, f5Files, f6Files];
+      for (var i = 0; i < fileArrayVars.length; i++) {
+        fileArrayVars[i] = shuffleStim(fileArrayVars[i]);
+        // uncomment next line to shorten all blocks
+        // fileArrayVars[i] = fileArrayVars[i].slice(0, 2);
+      }
+      
+      var firstTestFiles;
+      var secondTestFiles;
+      
+      if (location.search) {
+        condition = location.search.split("=")[1];
+      }
+      
+      if (condition === "1" || condition === "2") {
+        useGroup1 = (condition === "1");
+      } else {
+        console.log("Choosing random condition");
+        useGroup1 = Math.floor(Math.random() * 2);
+      }
+      
+      if (useGroup1) {
+        firstTestFiles = fileArrayVars[0];
+        secondTestFiles = fileArrayVars[1];
+      } else {
+        firstTestFiles = fileArrayVars[1];
+        secondTestFiles = fileArrayVars[0];
+      }
+      
+      
+      var welcomeArray = [
+        "<p>Welcome to the experiment. In the first part of the study you will hear a series of words. Please listen carefully to each word.</p><p>(Press any key to continue.)</p>",
+        "<p>It is crucial that you pay attention to each word as you will be asked, after a short pause, to type the word that you heard. You will know when to begin typing when you see a text box on the screen. After typing the word that you heard, press Enter to proceed.</p><p>(Press any key to continue)</p>",
+        "<p>You will need to listen carefully to each word as they are difficult to understand. For this reason, please be as attentive as possible to each word.</p><p>When you are ready, press any key to begin the experiment.</p>"
+      ];
+      var feedbackArray = [
+        "In the next block you will receive feedback after you have typed in the word that you heard. Please make sure to note if there is a difference between what you typed and what the word really is.",
+        "The next block will be similar to the last block as again you will receive feedback after you have typed in the word that you have heard. Please make sure to note if there is a difference between what you typed and what the word really is.",
+        "The next block will be similar to the last block as again you will receive feedback after you have typed in the word that you have heard. Please make sure to note if there is a difference between what you typed and what the word really is.",
+        "The next block will be similar to the last block as again you will receive feedback after you have typed in the word that you have heard. Please make sure to note if there is a difference between what you typed and what the word really is.",
+        "Please take a short break. Similar to the last block you will receive feedback after you have typed in the word that you heard. Please make sure to note if there is a difference between what you typed and what the word really is.",
+        "Please take a short break. Similar to the last block you will receive feedback after you have typed in the word that you heard. Please make sure to note if there is a difference between what you typed and what the word really is."
+      ];
+      var lastInstr = "You are done with all feedback blocks. Please take a short break. In the next block you will not receive any feedback. Rather, you will simply type the word that you hear for each trial.";
+      var goodbyeText = "You are now done with the whole experiment. Thank you for your time!";
+      
+      
+      for (var i = 0; i < welcomeArray.length; i++) {
+        var welcome = {
+          type: "text",
+          text: welcomeArray[i],
+          timing_post_trial: defaultITI
+        };
+        experiment.push(welcome);
+      }
+      
+      
+      var fixation = {
+        type: "multi-stim-multi-response",
+        stimuli: [["***", "**", "*"]],
+        is_html: true,
+        timing_stim: [500, 500, 500],
+        timing_response: 1500,
+        choices: [null, null, null],
+        response_ends_trial: false,
+        timing_post_trial: 0
+      };
+      
+      
+      function addTrials(stimuli, giveFeedback) {
+        var stimulus;
+        var word;
+        
+        for (var i = 0; i < stimuli.length; i++) {
+          stimulus = stimuli[i];
+          word = stimulus.split("_").slice(-1)[0].split(".")[0];
+          
+          var audioTrial = {
+            type: "single-audio",
+            stimuli: [stimulus],
+            timing_response: 750,
+            response_ends_trial: false,
+            timing_post_trial: 0
+          };
+          
+          var responseTrial = {
+            type: "survey-text",
+            questions: [["What word did you just hear? Please type your answer in the box below."]],
+            data: [{
+              word: word
+            }],
+            on_finish: function (trialData) {
+              var answer = JSON.parse(trialData.responses).Q0;
+              jsPsych.data.addDataToLastTrial({
+                answer: answer
+              });
+            },
+            timing_post_trial: 1000,
+            submit_on_enter: true
+          };
+          
+          experiment.push(fixation);
+          experiment.push(audioTrial);
+          experiment.push(responseTrial);
+          
+          if (giveFeedback) {
+            var feedbackText = {
+              type: "single-stim",
+              stimuli: [word],
+              is_html: true,
+              response_ends_trial: false,
+              timing_response: 1000,
+              timing_post_trial: 0
+            };
+            var feedbackAudio = {
+              type: "single-audio",
+              stimuli: [stimulus],
+              prompt: word,
+              timing_response: 1750,
+              response_ends_trial: false,
+              timing_post_trial: defaultITI
+            };
+            
+            experiment.push(feedbackText);
+            experiment.push(feedbackAudio);
+          }
+        }
+      }
+      
+      
+      addTrials(firstTestFiles);
+      
+      var feedbackFileArrays = fileArrayVars.slice(2);
+      for (var i = 0; i < feedbackFileArrays.length; i++) {
+        var feedbackInstr = {
+          type: "text",
+          text: feedbackArray[i],
+          timing_post_trial: defaultITI
+        };
+        experiment.push(feedbackInstr);
+        addTrials(feedbackFileArrays[i], true);
+      }
+      
+      var instr = {
+        type: "text",
+        text: lastInstr,
+        timing_post_trial: defaultITI
+      };
+      experiment.push(instr);
+      addTrials(secondTestFiles);
+      
+      
+      var questionnaire = {
+        type: "survey-text",
+        preamble: ['The following is a questionnaire to gauge basic demographic information.'],
+        questions: [[
+          'What is your gender? If you prefer not to answer, please type "prefer not to answer."',
+          'What ethnicity do you primarily identify with? Please select among the options of "White/Caucasian", "Black/African American", "Asian/Asian American", "Hispanic/Latino/Chicano", "Native American/Alaska Native", "Native Hawaiian/Pacific Islander", or "Other"',
+          'What is your home zip code? (optional)',
+          'Do you have any comments, questions, or suggestions regarding this study?'
+        ]],
+        on_finish: function () {
+          var csvData = jsPsych.data.dataAsCSV();
+          console.log(csvData);
+          var formData = {
+            exp: "TEST",
+            subj: subjectID,
+            results: csvData
+          };
+          $.post(
+            "http://perfectpitchstudies.pythonanywhere.com/data",
+            formData
+          );
+          $.post(
+            "http://205.208.68.176/data",
+            formData
+          );
+        }
+      };
+      
+      experiment.push(questionnaire);
+      
+      var goodbye = {
+        type: "single-stim",
+        stimuli: function () {
+          var pageText = goodbyeText +
+                         '<p>Below is your subject ID. Please copy it.</p>' +
+                         '<p>' + subjectID + '</p>';
+          return [pageText];
+        },
+        is_html: true,
+        response_ends_trial: false
+      };
+      
+      experiment.push(goodbye);
+      
+      jsPsych.init({
+        experiment_structure: experiment
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Experiment</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-5.0.2/jspsych.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-text.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-single-audio.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-call-function.js"></script>
+    <link href="jspsych-5.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="jspsych-target"></div>
+    <script>
+      var userip;
+    </script>
+    <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
+    <script>
+      /*
+       * Specify target note by appending "?target={note}" to the URL, replacing "#" with "s"
+       * For example, to specify F#, append this: ?target=Fs
+       */
+      
+      var folder = 'pitch_sequence_test/';
+      var numSequences = 3;
+      var defaultITI = 500;
+      var numTargets = 4;
+      var numNonTargets = 12;
+      
+      var subjectID;
+      var timeline = [];
+      var counts = {
+        total_hits: 0,
+        total_false_alarms: 0,
+        total_non_responses: 0
+      };
+      var target = "C";  // default is C, overridden by URL query parameter
+      var sequenceLength = numTargets + numNonTargets;
+      var noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+      var suffixes = ['.wav', '-1.wav', '1.wav'];
+      
+      var timestamp = Date.now();
+      if (userip) {
+        userip = userip.replace(/:/g, ".");
+        subjectID = userip + "-" + timestamp;
+      } else {
+        subjectID = timestamp;
+      }
+      if (location.search) {
+        target = location.search.split("=")[1].replace("s", "#").toUpperCase();
+      }
+      
+      jsPsych.data.addProperties({
+        subject: subjectID,
+        target_note: target
+      });
+      
+      
+      function fileIsTarget(filename, target) {
+        return filename.split(".")[0].replace("-", "").replace("1", "") === target;
+      }
+      
+      
+      function getFilepath(filename) {
+        return folder + encodeURIComponent(filename);
+      }
+      
+      
+      function randomFile(target, useTarget) {
+        var suffix = jsPsych.randomization.sample(suffixes, 1, true)[0];
+        var noteName = target;
+        if (!useTarget) {
+          while (noteName === target) {
+            noteName = jsPsych.randomization.sample(noteNames, 1, true)[0];
+          }
+        }
+        return noteName + suffix;
+      }
+      
+      
+      function decideUseTarget(targetsRemaining, nonTargetsRemaining) {
+        var maxInt = targetsRemaining + nonTargetsRemaining;
+        var randInt = Math.floor(Math.random() * maxInt);
+        return randInt < targetsRemaining;
+      }
+      
+      
+      function generateSequence() {
+        var targetsRemaining = numTargets;
+        var nonTargetsRemaining = numNonTargets;
+        var sequence = [];
+        var useTarget;
+        var filename;
+        
+        for (var i = 0; i < sequenceLength; i++) {
+          useTarget = decideUseTarget(targetsRemaining, nonTargetsRemaining);
+          filename = randomFile(target, useTarget);
+          sequence.push(filename);
+          if (useTarget) {
+            targetsRemaining -= 1;
+          } else {
+            nonTargetsRemaining -= 1;
+          }
+        }
+        
+        return sequence;
+      }
+      
+      
+      function addTrials(sequenceNum) {
+        var sequence = generateSequence();
+        var stim;
+        
+        for (var i = 0; i < sequenceLength; i++) {
+          stim = sequence[i];
+          
+          var audioTrial = {
+            type: "single-audio",
+            stimulus: getFilepath(stim),
+            timing_response: 2000,
+            choices: ["space"],  // keycode 32
+            response_ends_trial: false,
+            timing_post_trial: 0,
+            data: {
+              sequence_num: sequenceNum,
+              stim: stim,
+              is_target: fileIsTarget(stim, target) ? 1 : 0
+            },
+            on_finish: function (trialData) {
+              var keyPress = trialData.key_press;
+              var isTarget = trialData.is_target;
+              var flags = {
+                hit: 0,
+                false_alarm: 0,
+                non_response: 0
+              };
+              if (keyPress === 32) {
+                if (isTarget) {
+                  flags.hit = 1;
+                  counts.total_hits += 1;
+                } else {
+                  flags.false_alarm = 1;
+                  counts.total_false_alarms += 1;
+                }
+              } else {
+                flags.non_response = 1;
+                counts.total_non_responses += 1;
+              }
+              jsPsych.data.addDataToLastTrial($.extend(true, {}, flags, counts));
+            }
+          };
+          
+          timeline.push(audioTrial);
+        }
+      }
+      
+      
+      var welcome = {
+        type: "text",
+        text: "<p>Welcome to the experiment.</p><p>The target note is " + target + ". When you hear the target note, press spacebar.</p><p>Press any key to begin.</p>",
+        timing_post_trial: defaultITI
+      };
+      
+      timeline.push(welcome);
+      
+      
+      for (var i = 1; i < numSequences + 1; i++) {
+        var info = {
+          type: "text",
+          text: "Sequence " + i + " of " + numSequences + ". Press any key to continue.",
+          timing_post_trial: defaultITI
+        };
+        timeline.push(info);
+        addTrials(i);
+      }
+      
+      
+      var dataBlock = {
+        type: "call-function",
+        func: function () {
+          var csvData = jsPsych.data.dataAsCSV();
+          console.log(csvData);
+          var formData = {
+            exp: "TEST",
+            subj: subjectID,
+            results: csvData
+          };
+          $.post(
+            "http://perfectpitchstudies.pythonanywhere.com/data",
+            formData
+          );
+          $.post(
+            "http://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+        },
+        timing_post_trial: 0
+      };
+      
+      timeline.push(dataBlock);
+      
+      var goodbye = {
+        type: "single-stim",
+        stimulus: function () {
+          return "<p>This concludes the experiment.</p><p>Hits: " + counts.total_hits + "</p><p>False alarms: " + counts.total_false_alarms + "</p>";
+        },
+        is_html: true,
+        response_ends_trial: false
+      };
+      
+      timeline.push(goodbye);
+      
+      jsPsych.init({
+        timeline: timeline,
+        display_element: $("#jspsych-target")
+      });
+    </script>
+  </body>
+</html>
