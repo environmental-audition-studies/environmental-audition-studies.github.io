@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Order Perception</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-4.3/jspsych.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-audio.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-multi-stim-multi-response.js"></script>
+    <script src="jspsych-4.3/plugins/jspsych-survey-text.js"></script>
+    <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <script>
+      var userip;
+    </script>
+    <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
+    <script>
+      var i;
+      var subjectID;
+      var folder = "scrambled_natural_urban_stimuli/";
+      
+      var timestamp = Date.now();
+      if (userip) {
+        userip = userip.replace(/:/g, ".");
+        subjectID = userip + "-" + timestamp;
+      } else {
+        subjectID = timestamp;
+      }
+      jsPsych.data.addProperties({subject: subjectID});
+      
+      var experiment = [];
+      
+      var consent = {
+        type: "single-stim",
+        stimuli: [folder + "mturk_consent.png"],
+        prompt: '<p>Please wait for the consent form to load. If you agree, please press any key to continue on to the study.</p>',
+        timing_post_trial: 1000
+      };
+      
+      experiment.push(consent);
+      
+      var volumeTest = {
+        type: "single-audio",
+        stimuli: [folder + "volumetest.wav"],
+        timing_response: 10000,
+        response_ends_trial: false,
+        prompt: "<p>Before we begin, please adjust your volume so that the sound currently being played is at a comfortable listening level.</p>",
+        timing_post_trial: 0
+      };
+      
+      experiment.push(volumeTest);
+      
+      var welcome = {
+        type: "text",
+        text: '<p>Welcome to the experiment.</p>' +
+              '<p>You will be presented with a series of 80 sounds. Each sound is 5 seconds long.</p>' +
+              '<p>We simply want you to rate each sound in terms of how disorderly or orderly it sounds to you.</p>' +
+              '<p>When you are ready to begin, press any key.</p>',
+        timing_post_trial: 0
+      };
+      
+      experiment.push(welcome);
+      
+      var filePaths = [];
+      var files = ['NW01s.wav', 'NW02s.wav', 'NW03s.wav', 'NW04s.wav', 'NW05s.wav', 'NW06s.wav', 'NW07s.wav', 'NW08s.wav', 'NW09s.wav', 'NW10s.wav', 'NW11s.wav', 'NW12s.wav', 'NW13s.wav', 'NW14s.wav', 'NW15s.wav', 'NN01s.wav', 'NN02s.wav', 'NN03s.wav', 'NN04s.wav', 'NN05s.wav', 'NN06s.wav', 'NN07s.wav', 'NN08s.wav', 'NN09s.wav', 'NN10s.wav', 'NO01s.wav', 'NO02s.wav', 'NO03s.wav', 'NO04s.wav', 'NO05s.wav', 'NB01s.wav', 'NB02s.wav', 'NB03s.wav', 'NB04s.wav', 'NB05s.wav', 'NB06s.wav', 'NB07s.wav', 'NB08s.wav', 'NB09s.wav', 'NB10s.wav', 'UN01s.wav', 'UN02s.wav', 'UN03s.wav', 'UN04s.wav', 'UN05s.wav', 'UN06s.wav', 'UN07s.wav', 'UN08s.wav', 'UN09s.wav', 'UN10s.wav', 'UN11s.wav', 'UN12s.wav', 'UN13s.wav', 'UN14s.wav', 'UN15s.wav', 'UO01s.wav', 'UO02s.wav', 'UO03s.wav', 'UO04s.wav', 'UO05s.wav', 'UT01s.wav', 'UT02s.wav', 'UT03s.wav', 'UT04s.wav', 'UT05s.wav', 'UT06s.wav', 'UT07s.wav', 'UT08s.wav', 'UT09s.wav', 'UT10s.wav', 'UT11s.wav', 'UT12s.wav', 'UT13s.wav', 'UT14s.wav', 'UT15s.wav', 'UV01s.wav', 'UV02s.wav', 'UV03s.wav', 'UV04s.wav', 'UV05s.wav', 'UV06s.wav', 'UV07s.wav', 'UV08s.wav', 'UV09s.wav', 'UV10s.wav'];
+      
+      // files = files.slice(0, 2);  // uncomment for testing final screens
+      
+      var numFiles = files.length;
+      
+      for (i = 0; i < numFiles; i += 1) {
+        filePaths.push(folder + encodeURIComponent(files[i]));
+      }
+      
+      var allStimuli = jsPsych.randomization.shuffle(filePaths);
+      
+      var fixation = {
+        type: "multi-stim-multi-response",
+        stimuli: [["***", "**", "*"]],
+        is_html: true,
+        timing_stim: [500, 500, 500],
+        timing_response: 1500,
+        choices: [null, null, null],
+        response_ends_trial: false,
+        timing_post_trial: 0
+      };
+      
+      for (i = 0; i < numFiles; i += 1) {
+        var soundtype;
+        var stimulus = allStimuli[i];
+        
+        var trial = {
+          type: "single-audio",
+          stimuli: [stimulus],
+          timing_response: 5000,
+          response_ends_trial: false,
+          timing_post_trial: 0
+        };
+        
+        var filePath = decodeURIComponent(stimulus);
+        if (filePath.indexOf("/UN") > -1) {
+          soundtype = "urban_noise";
+        } else if (filePath.indexOf("/UO") > -1) {
+          soundtype = "urban_other";
+        } else if (filePath.indexOf("/UT") > -1) {
+          soundtype = "urban_traffic";
+        } else if (filePath.indexOf("/UV") > -1) {
+          soundtype = "urban_voice";
+        } else if (filePath.indexOf("/NB") > -1) {
+          soundtype = "natural_bird";
+        } else if (filePath.indexOf("/NN") > -1) { 
+          soundtype = "natural_noise";
+        } else if (filePath.indexOf("/NO") > -1) { 
+          soundtype = "natural_other"; 
+        } else {
+          soundtype = "natural_water";
+        }
+        
+        var response = {
+          type: "single-stim",
+          stimuli: ['<p>Was the sound you heard disorderly or orderly?</p>' +
+                    '<p>Use the numbers 1 through 7 to make your response. "1" corresponds to "very disorderly". "4" corresponds to "neither disorderly nor orderly", and "7" corresponds to "very orderly"</p>'],
+          is_html: true,
+          choices: ["1", "2", "3", "4", "5", "6", "7"],
+          data: [{
+            file: filePath,
+            soundtype: soundtype
+          }],
+          timing_post_trial: 0
+        };
+        
+        experiment.push(fixation);
+        experiment.push(trial);
+        experiment.push(response);
+      }
+      
+      var questionnaire = {
+        type: "survey-text",
+        preamble: ['The following is a questionnaire to gauge basic demographic information.'],
+        questions: [[
+          'What is your gender? If you prefer not to answer, please type "prefer not to answer."',
+          'What ethnicity do you primarily identify with? Please select among the options of "White/Caucasian", "Black/African American", "Asian/Asian American", "Hispanic/Latino/Chicano", "Native American/Alaska Native", "Native Hawaiian/Pacific Islander", or "Other"',
+          'What is your home zip code? (optional)',
+          'Do you have any comments, questions, or suggestions regarding this study?'
+        ]],
+        on_finish: function () {
+          var csvData = jsPsych.data.dataAsCSV();
+          console.log(csvData);
+          var formData = {
+            exp: "ORDER_DISORDER_SCRAMBLED",  // comment out for testing
+            // exp: "TEST",  // uncomment for testing
+            subj: subjectID,
+            results: csvData
+          };
+          $.post(
+            "http://perfectpitchstudies.pythonanywhere.com/data",
+            formData
+          );
+		  $.post(
+            "http://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+          $.post(
+            "http://205.208.68.176/data",
+            formData
+          );
+        }
+      };
+      
+      experiment.push(questionnaire);
+      
+      var goodbye = {
+        type: "single-stim",
+        stimuli: function () {
+          var pageText = '<p>This concludes the experiment. Thank you for your participation.</p>' +
+                         '<p>Below is your subject ID. Please copy it.</p>' +
+                         '<p>' + subjectID + '</p>';
+          return [pageText];
+        },
+        is_html: true,
+        response_ends_trial: false,
+        timing_post_trial: 0
+      };
+      
+      experiment.push(goodbye);
+      
+      jsPsych.init({
+        experiment_structure: experiment
+      });
+    </script>
+  </body>
+</html>
