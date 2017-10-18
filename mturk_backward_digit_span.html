@@ -258,13 +258,17 @@
           var csvData = jsPsych.data.dataAsCSV();
           console.log(csvData);
           var formData = {
-            exp: "backward_digit_span",  // comment out for testing
+            exp: "KIM_BDS",  // comment out for testing
             // exp: "TEST",  // uncomment for testing
             subj: subjectID + "-session" + session,
             results: csvData
           };
           $.post(
             "http://perfectpitchstudies.pythonanywhere.com/data",
+            formData
+          );
+		  $.post(
+            "http://svanhedger.pythonanywhere.com/data",
             formData
           );
           $.post(
